@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">VUpark</string>
+    <string name="username_text">VUNet ID:</string>
+    <string name="username_hint">Type your username</string>
+    <string name="password_text">Password:</string>
+    <string name="password_hint">Type your password</string>
+</resources>
