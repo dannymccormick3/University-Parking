@@ -1,7 +1,16 @@
 <resources>
+
     <string name="app_name">VUpark</string>
-    <string name="username_text">VUNet ID:</string>
+    <string name="username_text">Username:</string>
     <string name="username_hint">Type your username</string>
     <string name="password_text">Password:</string>
     <string name="password_hint">Type your password</string>
+    <string name="login_text">Login</string>
+    <string name="title_activity_maps">Map</string>
+
+    <string name="park_button_text">Park</string>
+    <string name="lots_button_text">Parking Lots</string>
+    <string name="account_button_text">Account</string>
+    <string name="help_text">VU Parking Contact Info.</string>
+
 </resources>

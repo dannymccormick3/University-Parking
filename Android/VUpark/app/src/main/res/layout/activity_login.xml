@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:contentDescription="@null"
-        android:src="@mipmap/ic_launcher"
+        android:src="@drawable/ic_directions_car_black_24dp"
         android:paddingBottom="30dp"/>
 
     <LinearLayout
@@ -46,7 +46,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingBottom="40sp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -68,5 +69,12 @@
             android:textSize="20sp" />
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:text="@string/login_text"/>
 
 </LinearLayout>
