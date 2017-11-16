@@ -3,6 +3,7 @@ package cs4278.vupark;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,6 +13,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mVUnetid;
     private EditText mPassword;
     private Button mLoginButton;
+    private DBConnection mConnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +22,8 @@ public class LoginActivity extends AppCompatActivity {
 
         mVUnetid = findViewById(R.id.vunetid_text);
         mPassword = findViewById(R.id.password_text);
+
+        mConnection = new DBConnection();
 
         mLoginButton = findViewById(R.id.login_button);
         mLoginButton.setOnClickListener(
@@ -34,8 +38,13 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void tryLogin(String username, String password) {
-
-        Intent intent = new Intent(this, MapsActivity.class);
-        startActivity(intent);
+        if (mConnection.validateCredentials(username, password)) {
+            Intent intent = new Intent(this, MapsActivity.class);
+            startActivity(intent);
+        }
+        else{
+            //TODO: Display message to user saying invalid username/password
+            return;
+        }
     }
 }
