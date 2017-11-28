@@ -114,11 +114,11 @@ public class DBConnection {
         return availableLots;
     }
 
-    public List<String> getAvailableSpots() {
+    public List<Integer> getAvailableSpots(ParkingLot lot, String permit) {
         //TODO: Connect to database and get list of all available spots.
-        List<String> spots = new ArrayList<>();
-        spots.add("10");
-        spots.add("11");
+        List<Integer> spots = new ArrayList<>();
+        spots.add(10);
+        spots.add(11);
         return spots;
     }
 }
