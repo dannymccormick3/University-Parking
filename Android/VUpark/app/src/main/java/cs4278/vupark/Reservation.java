@@ -10,14 +10,12 @@ import java.util.Date;
 
 public class Reservation {
     private Date mStartDate;
-    private Time mStartTime;
     private ParkingLot mLot;
     private int mDuration;
     private int mSpotNumber;
 
-    public Reservation(Date startDate, Time startTime, int duration, ParkingLot lot, int spotNumber){
-        mStartDate = startDate;
-        mStartTime = startTime;
+    public Reservation(Date startDateTime, int duration, ParkingLot lot, int spotNumber){
+        mStartDate = startDateTime;
         mDuration = duration;
         mLot = lot;
         mSpotNumber = spotNumber;
@@ -29,14 +27,6 @@ public class Reservation {
 
     public void setStartDate(Date startDate){
         mStartDate = startDate;
-    }
-
-    public Time getStartTime(){
-        return mStartTime;
-    }
-
-    public void setStartTime(Time startTime){
-        mStartTime = startTime;
     }
 
     public int getDuration() {

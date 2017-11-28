@@ -7,6 +7,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polygon;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,6 +18,7 @@ public class ParkingLot {
     private String name;
     private Polygon lot;
     private String permits;
+    private List<Integer> availableSpots;
 
     ParkingLot(String name, Polygon lot) {
         this.name = name;
