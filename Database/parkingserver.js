@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const mysql = require('mysql');
-const connection = mysql.creatConnection({
+const connection = mysql.createConnection({
 	host:'parkingdatabase.c9dcrnrodp1p.us-east-2.rds.amazonaws.com',
  	user: 'ParkTeam',
  	password:'variablerateplanning',
@@ -36,3 +36,4 @@ app.get('/getAvailableLots', (req, res) => {
 		res.send(JSON.stringify(temp));
 	})
 })
+app.listen(3000);
