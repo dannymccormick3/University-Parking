@@ -53,7 +53,7 @@ public class DBConnection {
         catch(InterruptedException ex){
             Thread.currentThread().interrupt();
         }
-        if (usernames.containsKey("username")){
+        if (usernames.containsKey(username)){
             if(usernames.get(username).equals(password)){
                 return true;
             }

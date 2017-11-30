@@ -37,14 +37,22 @@ public class LoginActivity extends AppCompatActivity {
         );
     }
 
-    private void tryLogin(String username, String password) {
-        if (mConnection.validateCredentials(username, password)) {
-            Intent intent = new Intent(this, MapsActivity.class);
-            startActivity(intent);
-        }
-        else{
-            //TODO: Display message to user saying invalid username/password
-            return;
-        }
+    private void tryLogin(String mUsername, String mPassword) {
+        final String username = mUsername;
+        final String password = mPassword;
+        final Intent intent = new Intent(this, MapsActivity.class);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (mConnection.validateCredentials(username, password)) {
+                    startActivity(intent);
+                }
+                else{
+                    //TODO: Display message to user saying invalid username/password
+                    return;
+                }
+            }
+        }).start();
+
     }
 }
