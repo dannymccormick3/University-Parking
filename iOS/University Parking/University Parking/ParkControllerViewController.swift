@@ -10,18 +10,77 @@ import UIKit
 import MapKit
 
 class ParkControllerViewController: UIViewController, MKMapViewDelegate,
-        CLLocationManagerDelegate {
-
+CLLocationManagerDelegate, UITableViewDataSource {
+    
+    let kensington = Lot(title: "Kensington", coordinate: CLLocationCoordinate2D(latitude: 36.142103, longitude: -86.806105), spaces: [1, 2, 3, 4, 5], permit: "F")
+    
+    var selectedLot: Lot?
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if (selectedLot == nil) {
+            return 0
+        } else {
+            return selectedLot!.spaces.count
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "AvailableSpotCell", for: indexPath)
+        
+        if (selectedLot == nil) {
+            cell.textLabel!.text = "No spots available."
+        } else {
+            cell.textLabel!.text = "Spot: \(String(describing: selectedLot!.spaces[indexPath.row]))"
+        }
+        
+        
+        return cell
+    }
+    
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var parkingLotsButton: UIBarButtonItem!
     @IBOutlet weak var accountButton: UIBarButtonItem!
     
     @IBOutlet weak var helpButton: UIBarButtonItem!
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view.
-        checkLocationAuthorizationStatus()
-        determineCurrentLocation()
+    
+    @IBOutlet weak var ReserveOutlet: UIButton!
+
+    @IBOutlet weak var TableViewOutlet: UITableView!
+    
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        
+        guard let annotation = annotation as? Lot else { return nil }
+        
+        let identifier = "marker"
+        var view: MKMarkerAnnotationView
+        
+        if let dequeuedView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
+            as? MKMarkerAnnotationView {
+            dequeuedView.annotation = annotation
+            view = dequeuedView
+        } else {
+           
+            view = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+            view.canShowCallout = true
+            view.calloutOffset = CGPoint(x: -5, y: 5)
+            view.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+        }
+        return view
+    }
+    
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        
+        selectedLot = view.annotation as! Lot
+        
+        TableViewOutlet.reloadData()
+//        let lotTitle = lot.title
+//        let permitInfo = lot.permit
+//        let availableSpaces = lot.spaces
+        
+//        let ac = UIAlertController(title: lotTitle, message: "Permit(s): \(permitInfo)\nAvailable Spaces: \(availableSpaces.count)", preferredStyle: .alert)
+//        
+//        ac.addAction(UIAlertAction(title: "Reserve", style: .default))
+//        present(ac, animated: true)
     }
     
     let locationManager = CLLocationManager()
@@ -69,6 +128,14 @@ class ParkControllerViewController: UIViewController, MKMapViewDelegate,
         myAnnotation.coordinate = CLLocationCoordinate2DMake(userLocation.coordinate.latitude, userLocation.coordinate.longitude);
         myAnnotation.title = "Current location"
         mapView.addAnnotation(myAnnotation)
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        checkLocationAuthorizationStatus()
+        determineCurrentLocation()
+        mapView.delegate = self
+        mapView.addAnnotation(kensington)
     }
     
 
