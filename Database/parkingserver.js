@@ -18,8 +18,9 @@ app.get('/makeReservation', (req, res) => {
 app.get('/getAvailableLots', (req, res) => {
 	var startquery = "SELECT Lot, Count(Space) as Numspaces "
 										+ "FROM Spaces "
-										+ "WHERE Occupied = 0 AND Permit = " + req.query.permit
+										+ "WHERE Occupied = 0 AND Permit = \" " + req.query.permit + "\" " +
 										+ " GROUP BY Lot";
+	console.log(startquery);
 	connection.query(startquery, (err, rows) => {
 		if(err) {
 			throw err;
