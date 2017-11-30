@@ -36,3 +36,4 @@ app.get('/getAvailableLots', (req, res) => {
 		res.send(JSON.stringify(temp));
 	})
 })
+app.listen(3000);
