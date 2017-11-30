@@ -16,10 +16,10 @@ app.get('/makeReservation', (req, res) => {
 })
 
 app.get('/getAvailableLots', (req, res) => {
-	var startquery = "SELECT Lot, Count(Space) as Numspaces"
-										+ "FROM Spaces"
+	var startquery = "SELECT Lot, Count(Space) as Numspaces "
+										+ "FROM Spaces "
 										+ "WHERE Occupied = 0 AND Permit = " + req.query.permit
-										+ "GROUP BY Lot";
+										+ " GROUP BY Lot";
 	connection.query(startquery, (err, rows) => {
 		if(err) {
 			throw err;
@@ -30,7 +30,7 @@ app.get('/getAvailableLots', (req, res) => {
 			temp = {};
 			temp.Lot = row.Lot;
 			temp.Spaces = row.Numspaces;
-			obj.[count.toString()]= temp;
+			obj[count.toString()]= temp;
 			count++;
 		});
 		res.send(JSON.stringify(temp));
