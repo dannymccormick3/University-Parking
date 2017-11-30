@@ -11,12 +11,12 @@ connection.connect((err)=> {
 
 })
 app.get('/makeReservation', (req, res) => {
-	String startquery = ""
+	var startquery = ""
 
 })
 
 app.get('/getAvailableLots', (req, res) => {
-	String startquery = "SELECT Lot, Count(Space) as Numspaces"
+	var startquery = "SELECT Lot, Count(Space) as Numspaces"
 										+ "FROM Spaces"
 										+ "WHERE Occupied = 0 AND Permit = " + req.query.permit
 										+ "GROUP BY Lot";
@@ -24,8 +24,8 @@ app.get('/getAvailableLots', (req, res) => {
 		if(err) {
 			throw err;
 		}
-		obj = {};
-		int count =0;
+		var obj = {};
+		var count =0;
 		rows.forEach( (row) => {
 			temp = {};
 			temp.Lot = row.Lot;
