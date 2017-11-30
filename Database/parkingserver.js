@@ -8,7 +8,6 @@ const connection = mysql.createConnection({
  	database:'parking'
 });
 connection.connect((err)=> {
-	throw err;
 })
 app.get('/makeReservation', (req, res) => {
 	var startquery = ""
@@ -18,7 +17,7 @@ app.get('/makeReservation', (req, res) => {
 app.get('/getAvailableLots', (req, res) => {
 	var startquery = "SELECT Lot, Count(Space) as Numspaces "
 										+ "FROM Spaces "
-										+ "WHERE Occupied = 0 AND Permit = \" " + req.query.permit + "\" " 
+										+ "WHERE Occupied = 0 AND Permit = \" " + req.query.permit + "\" "
 										+ " GROUP BY Lot";
 	console.log(startquery);
 	connection.query(startquery, (err, rows) => {
@@ -28,7 +27,7 @@ app.get('/getAvailableLots', (req, res) => {
 		var obj = {};
 		var count =0;
 		rows.forEach( (row) => {
-			temp = {};
+			var temp = {};
 			temp.Lot = row.Lot;
 			temp.Spaces = row.Numspaces;
 			obj[count.toString()]= temp;
