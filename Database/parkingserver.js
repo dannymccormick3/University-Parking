@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const mysql = require('mysql');
-const connection = mysql.creatConnection({
+const connection = mysql.createConnection({
 	host:'parkingdatabase.c9dcrnrodp1p.us-east-2.rds.amazonaws.com',
  	user: 'ParkTeam',
  	password:'variablerateplanning',
@@ -30,7 +30,7 @@ app.get('/getAvailableLots', (req, res) => {
 			temp = {};
 			temp.Lot = row.Lot;
 			temp.Spaces = row.Numspaces;
-			obj.[count.toString()]= temp;
+			obj[count.toString()]= temp;
 			count++;
 		});
 		res.send(JSON.stringify(temp));
