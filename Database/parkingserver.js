@@ -1,14 +1,14 @@
 const express = require('express');
 const app = express();
 const mysql = require('mysql');
-const connection = mysql.createConnection({
+const connection = mysql.creatConnection({
 	host:'parkingdatabase.c9dcrnrodp1p.us-east-2.rds.amazonaws.com',
  	user: 'ParkTeam',
  	password:'variablerateplanning',
  	database:'parking'
 });
 connection.connect((err)=> {
-
+	throw err;
 })
 app.get('/makeReservation', (req, res) => {
 	var startquery = ""
@@ -23,7 +23,7 @@ app.get('/getAvailableLots', (req, res) => {
 	console.log(startquery);
 	connection.query(startquery, (err, rows) => {
 		if(err) {
-			throw err;
+			console.log(err);
 		}
 		var obj = {};
 		var count =0;
@@ -37,4 +37,3 @@ app.get('/getAvailableLots', (req, res) => {
 		res.send(JSON.stringify(temp));
 	})
 })
-app.listen(3000);
