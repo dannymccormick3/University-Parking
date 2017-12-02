@@ -27,13 +27,7 @@ import java.util.List;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-
-    private String[] mLotNames = {"Terrace Place Garage"};
-    private double[][][] mLotCoordinates = {
-            {{36.150149, -86.800308}, {36.150577, -86.799402}, {36.150287, -86.799186}, {36.149849, -86.800100}}
-};
     private String username;
-
     private ArrayList<ParkingLot> mParkingLots = new ArrayList<>();
 
     @Override
@@ -44,11 +38,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        ArrayList<String> names = new ArrayList<>();
-        ArrayList<PolygonOptions> polys = new ArrayList<>();
         Intent incomingIntent = getIntent();
-        names = incomingIntent.getStringArrayListExtra("names");
-        polys = incomingIntent.getParcelableArrayListExtra("polys");
+        ArrayList<String> names = incomingIntent.getStringArrayListExtra("names");
+        ArrayList<PolygonOptions> polys = incomingIntent.getParcelableArrayListExtra("polys");
         for (int i = 0; i < names.size(); i++){
             mParkingLots.add(new ParkingLot(names.get(i), polys.get(i)));
         }
@@ -82,7 +74,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 final ParkingLot curLot = (ParkingLot)polygon.getTag();
                 String text = curLot.getName();
                 Toast.makeText(MapsActivity.this, text, Toast.LENGTH_SHORT).show();
-                // TODO: Show available spots at bottom
                 new AsyncTask() {
                     @Override
                     protected ArrayList<Integer> doInBackground(Object[] objects) {
@@ -92,9 +83,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         return spaces;
                     }
 
-                    protected void onPostExecute(ArrayList<Integer> spaces){
-                        for(Integer i: spaces){
-                            Log.d("Space:", i.toString());
+                    @Override
+                    protected void onPostExecute(Object spaces){
+                        for(Integer i: (ArrayList<Integer>)spaces){
+                            //TODO: Update this to fill in the bottom section of UI
+                            //Toast.makeText(MapsActivity.this, "TEST" + i, Toast.LENGTH_SHORT).show();
                         }
                     }
                 }.execute();
