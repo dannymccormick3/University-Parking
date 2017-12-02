@@ -123,7 +123,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             //TODO: Update this to fill in the bottom section of UI
                             //Toast.makeText(MapsActivity.this, "TEST" + i, Toast.LENGTH_SHORT).show();
                         }
-                        listViewAdapter.notifyDataSetChanged();
+                        //listViewAdapter.notifyDataSetChanged();
                     }
                 }.execute();
             }
