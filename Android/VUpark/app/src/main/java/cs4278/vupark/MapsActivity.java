@@ -1,7 +1,9 @@
 package cs4278.vupark;
 
 import android.app.ActionBar;
+import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.provider.CalendarContract;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -30,9 +32,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private double[][][] mLotCoordinates = {
             {{36.150149, -86.800308}, {36.150577, -86.799402}, {36.150287, -86.799186}, {36.149849, -86.800100}}
 };
+    private String username;
 
     private ArrayList<ParkingLot> mParkingLots = new ArrayList<>();
-    private DBConnection mConnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,14 +44,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        mConnection = new DBConnection();
         ArrayList<String> names = new ArrayList<>();
         ArrayList<PolygonOptions> polys = new ArrayList<>();
-        names = getIntent().getStringArrayListExtra("names");
-        polys = getIntent().getParcelableArrayListExtra("polys");
+        Intent incomingIntent = getIntent();
+        names = incomingIntent.getStringArrayListExtra("names");
+        polys = incomingIntent.getParcelableArrayListExtra("polys");
         for (int i = 0; i < names.size(); i++){
             mParkingLots.add(new ParkingLot(names.get(i), polys.get(i)));
         }
+        username = incomingIntent.getStringExtra("username");
     }
 
 
@@ -76,8 +79,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
             @Override
             public void onPolygonClick(Polygon polygon) {
-                String text = ((ParkingLot)polygon.getTag()).getName();
+                final ParkingLot curLot = (ParkingLot)polygon.getTag();
+                String text = curLot.getName();
                 Toast.makeText(MapsActivity.this, text, Toast.LENGTH_SHORT).show();
+                // TODO: Show available spots at bottom
+                new AsyncTask() {
+                    @Override
+                    protected ArrayList<Integer> doInBackground(Object[] objects) {
+                        DBConnection mConnection = new DBConnection();
+                        String permit = mConnection.getPermit(username);
+                        ArrayList<Integer> spaces = mConnection.getAvailableSpots(curLot, permit);
+                        return spaces;
+                    }
+
+                    protected void onPostExecute(ArrayList<Integer> spaces){
+                        for(Integer i: spaces){
+                            Log.d("Space:", i.toString());
+                        }
+                    }
+                }.execute();
             }
         });
 
