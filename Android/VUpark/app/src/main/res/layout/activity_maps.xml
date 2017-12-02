@@ -125,7 +125,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Terrace Place Garage"
                 android:textColor="@color/colorAccent"
                 android:textSize="12pt"
                 android:textStyle="bold" />
@@ -140,13 +139,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="@string/reserve_button_text"/>
+                    android:background="@color/pastel_green"
+                    android:text="@string/reserve_button_text" />
 
                 <Button
                     android:id="@+id/register_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:background="@color/pastel_green"
                     android:text="@string/register_button_text"/>
 
         </android.support.v7.widget.Toolbar>
