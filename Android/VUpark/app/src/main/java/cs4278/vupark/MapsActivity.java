@@ -114,8 +114,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void onPolygonClicked(Polygon polygon){
         final ParkingLot curLot = (ParkingLot)polygon.getTag();
-        String text = curLot.getName();
-        Toast.makeText(MapsActivity.this, text, Toast.LENGTH_SHORT).show();
+        
         animator.setDisplayedChild(1);
         new AsyncTask() {
             @Override
