@@ -135,7 +135,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void onPolygonClicked(Polygon polygon){
         final ParkingLot curLot = (ParkingLot)polygon.getTag();
-        lot_name.setText(curLot.getName())
+        lot_name.setText(curLot.getName());
         animator.setDisplayedChild(1);
         listViewAdapter.clear();
         new AsyncTask() {
