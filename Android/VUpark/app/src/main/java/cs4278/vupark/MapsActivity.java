@@ -102,31 +102,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
             @Override
-            public void onPolygonClick(Polygon polygon) {
-                final ParkingLot curLot = (ParkingLot)polygon.getTag();
-                String text = curLot.getName();
-                Toast.makeText(MapsActivity.this, text, Toast.LENGTH_SHORT).show();
-                new AsyncTask() {
-                    @Override
-                    protected ArrayList<Integer> doInBackground(Object[] objects) {
-                        DBConnection mConnection = new DBConnection();
-                        String permit = mConnection.getPermit(username);
-                        ArrayList<Integer> spaces = mConnection.getAvailableSpots(curLot, permit);
-                        return spaces;
-                    }
-
-                    @Override
-                    protected void onPostExecute(Object spaces){
-                        listItems = new ArrayList<String>();
-                        for(Integer i: (ArrayList<Integer>)spaces){
-                            listItems.add("Space " + i);
-                            //TODO: Update this to fill in the bottom section of UI
-                            //Toast.makeText(MapsActivity.this, "TEST" + i, Toast.LENGTH_SHORT).show();
-                        }
-                        //listViewAdapter.notifyDataSetChanged();
-                    }
-                }.execute();
-            }
+            public void onPolygonClick(Polygon polygon) {onPolygonClicked(polygon);}
         });
 
 
@@ -134,6 +110,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng terracePlaceGarage = new LatLng(36.150285, -86.799749);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(terracePlaceGarage, 15.0f));
 
+    }
+
+    private void onPolygonClicked(Polygon polygon){
+        final ParkingLot curLot = (ParkingLot)polygon.getTag();
+        String text = curLot.getName();
+        Toast.makeText(MapsActivity.this, text, Toast.LENGTH_SHORT).show();
+        new AsyncTask() {
+            @Override
+            protected ArrayList<Integer> doInBackground(Object[] objects) {
+                DBConnection mConnection = new DBConnection();
+                String permit = mConnection.getPermit(username);
+                ArrayList<Integer> spaces = mConnection.getAvailableSpots(curLot, permit);
+                return spaces;
+            }
+
+            @Override
+            protected void onPostExecute(Object spaces){
+                listItems = new ArrayList<String>();
+                for(Integer i: (ArrayList<Integer>)spaces){
+                    listItems.add("Space " + i);
+                    //TODO: Update this to fill in the bottom section of UI
+                    //Toast.makeText(MapsActivity.this, "TEST" + i, Toast.LENGTH_SHORT).show();
+                }
+                //listViewAdapter.notifyDataSetChanged();
+            }
+        }.execute();
     }
 
 }
