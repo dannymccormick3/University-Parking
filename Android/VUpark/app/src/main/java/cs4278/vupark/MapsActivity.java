@@ -8,6 +8,8 @@ import android.provider.CalendarContract;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -26,6 +28,7 @@ import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -45,7 +48,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private TextView lot_name;
     private Button reserve_button;
     private Button register_button;
-    private ListView lot_list;
+    private ListView lot_listview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +68,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         lot_name = findViewById(R.id.lot_name);
         reserve_button = findViewById(R.id.reserve_button);
         register_button = findViewById(R.id.register_button);
-        lot_list = findViewById(R.id.lot_list);
+        lot_listview = findViewById(R.id.lot_list);
 
         Intent incomingIntent = getIntent();
         ArrayList<String> names = incomingIntent.getStringArrayListExtra("names");
@@ -76,7 +79,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         username = incomingIntent.getStringExtra("username");
         //TODO: Update this to findViewById for list view instead of null.
         listViewAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listItems);
-        lot_list.setAdapter(listViewAdapter);
+        lot_listview.setAdapter(listViewAdapter);
+        lot_listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final int pos = position;
+                final String spotString = listItems.get(pos);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        int spotNumber = Integer.parseInt(spotString.substring(6)); //Parse "Space <num>"
+                        Reservation r = new Reservation(new Date(), lot_name.getText().toString(), spotNumber);
+                        DBConnection mConnection = new DBConnection();
+                        mConnection.makeReservation(r);
+                    }
+                }).start();
+
+                listItems.set(position, listItems.get(position) + " reserved");
+                listViewAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
 
@@ -114,8 +135,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void onPolygonClicked(Polygon polygon){
         final ParkingLot curLot = (ParkingLot)polygon.getTag();
-        String text = curLot.getName();
-        Toast.makeText(MapsActivity.this, text, Toast.LENGTH_SHORT).show();
+        lot_name.setText(curLot.getName());
         animator.setDisplayedChild(1);
         listViewAdapter.clear();
         new AsyncTask() {
@@ -131,8 +151,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             protected void onPostExecute(Object spaces){
                 for(Integer i: (ArrayList<Integer>)spaces){
                     listItems.add("Space " + i);
-                    //TODO: Update this to fill in the bottom section of UI
-                    Toast.makeText(MapsActivity.this, "TEST" + i, Toast.LENGTH_SHORT).show();
                 }
                 listViewAdapter.notifyDataSetChanged();
             }

@@ -38,10 +38,10 @@ public class DBConnection {
 
         // adjust the style of the polygon
         polygonOps.strokeWidth(3.5f).fillColor(Color.RED);
-        ParkingLot myLot = new ParkingLot("Kensington", polygonOps);
+        ParkingLot myLot = new ParkingLot("Terrace Place", polygonOps);
         availableLots.add(myLot);
         Date startDateTime = new Date(2017,12,9,10, 30);
-        Reservation newReservation = new Reservation(startDateTime, 30, myLot, 10);
+        Reservation newReservation = new Reservation(startDateTime, "Terrace", 10);
         curReservations.add(newReservation);
     }
 
@@ -63,7 +63,7 @@ public class DBConnection {
     public boolean validateCredentials(String username, String password) {
         //TODO: Update to actually connect with server.
         try {
-            Thread.sleep(2500);
+            Thread.sleep(250);
         }
         catch(InterruptedException ex){
             Thread.currentThread().interrupt();
@@ -83,7 +83,7 @@ public class DBConnection {
     public boolean addUser(String username, String password) {
         //TODO: Update to add send new user.
         try {
-            Thread.sleep(2500);
+            Thread.sleep(250);
         }
         catch(InterruptedException ex){
             Thread.currentThread().interrupt();
@@ -99,7 +99,7 @@ public class DBConnection {
     public boolean makeReservation(Reservation reservation) {
         //TODO: Update parameters and body to actually send reservation
         try {
-            Thread.sleep(2500);
+            Thread.sleep(250);
         }
         catch(InterruptedException ex){
             Thread.currentThread().interrupt();
