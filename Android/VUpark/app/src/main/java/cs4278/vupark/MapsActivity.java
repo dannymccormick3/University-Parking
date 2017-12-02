@@ -12,7 +12,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewAnimator;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -34,6 +36,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ArrayList<String> listItems = new ArrayList<>();
     private ArrayAdapter<String> listViewAdapter;
 
+    private Button park_button;
+    private Button lots_button;
+    private Button account_button;
+    private ImageButton info_button;
+
+    private ViewAnimator animator;
+    private TextView lot_name;
+    private Button reserve_button;
+    private Button register_button;
+    private ListView lot_list;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +55,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        park_button = findViewById(R.id.park_button);
+        lots_button = findViewById(R.id.lots_button);
+        account_button = findViewById(R.id.account_button);
+        info_button = findViewById(R.id.help_button);
+
+        animator = findViewById(R.id.animator);
+        lot_name = findViewById(R.id.lot_name);
+        reserve_button = findViewById(R.id.reserve_button);
+        register_button = findViewById(R.id.register_button);
+        lot_list = findViewById(R.id.lot_list);
+
         Intent incomingIntent = getIntent();
         ArrayList<String> names = incomingIntent.getStringArrayListExtra("names");
         ArrayList<PolygonOptions> polys = incomingIntent.getParcelableArrayListExtra("polys");
