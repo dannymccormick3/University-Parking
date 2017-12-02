@@ -8,8 +8,10 @@ import android.provider.CalendarContract;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -29,6 +31,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private String username;
     private ArrayList<ParkingLot> mParkingLots = new ArrayList<>();
+    private ArrayList<String> listItems = new ArrayList<>();
+    private ArrayAdapter<String> listViewAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +49,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mParkingLots.add(new ParkingLot(names.get(i), polys.get(i)));
         }
         username = incomingIntent.getStringExtra("username");
+        //TODO: Update this to findViewById for list view instead of null.
+        //listViewAdapter = new ArrayAdapter<String>(this, null, listItems);
+        //setListAdapter(listViewAdapter);
     }
 
 
@@ -85,10 +92,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     @Override
                     protected void onPostExecute(Object spaces){
+                        listItems = new ArrayList<String>();
                         for(Integer i: (ArrayList<Integer>)spaces){
+                            listItems.add("Space " + i);
                             //TODO: Update this to fill in the bottom section of UI
                             //Toast.makeText(MapsActivity.this, "TEST" + i, Toast.LENGTH_SHORT).show();
                         }
+                        listViewAdapter.notifyDataSetChanged();
                     }
                 }.execute();
             }
