@@ -16,6 +16,6 @@
 
     <string name="pick_lot_text">Click on a parking lot in the map above.</string>
     <string name="reserve_button_text">Reserve Spot</string>
-    <string name="register_button_text">Register Parking Spot</string>
+    <string name="register_button_text">Mark You've Parked</string>
 
 </resources>
