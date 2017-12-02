@@ -13,4 +13,9 @@
     <string name="account_button_text">Account</string>
     <string name="help_text">VU Parking Contact Info.</string>
 
+
+    <string name="pick_lot_text">Click on a parking lot in the map above.</string>
+    <string name="reserve_button_text">Reserve Spot</string>
+    <string name="register_button_text">Register Parking Spot</string>
+
 </resources>
