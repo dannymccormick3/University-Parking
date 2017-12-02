@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.provider.CalendarContract;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -19,6 +20,7 @@ import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -27,9 +29,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String[] mLotNames = {"Terrace Place Garage"};
     private double[][][] mLotCoordinates = {
             {{36.150149, -86.800308}, {36.150577, -86.799402}, {36.150287, -86.799186}, {36.149849, -86.800100}}
-    };
+};
 
     private ArrayList<ParkingLot> mParkingLots = new ArrayList<>();
+    private DBConnection mConnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +42,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
+        mConnection = new DBConnection();
+        ArrayList<String> names = new ArrayList<>();
+        ArrayList<PolygonOptions> polys = new ArrayList<>();
+        names = getIntent().getStringArrayListExtra("names");
+        polys = getIntent().getParcelableArrayListExtra("polys");
+        for (int i = 0; i < names.size(); i++){
+            mParkingLots.add(new ParkingLot(names.get(i), polys.get(i)));
+        }
     }
 
 
@@ -56,31 +66,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Draw the parking lots on the map
-        assert(mLotCoordinates.length == mLotNames.length);
-        for(int i = 0; i < mLotNames.length; i++) {
-            String name = mLotNames[i];
-            double[][] coordinates = mLotCoordinates[i];
-            // create a new clickable polygon
-            PolygonOptions polygonOps = new PolygonOptions().clickable(true);
-
-            // add the coordinates to the polygon
-            for(double[] coordinate : coordinates) {
-                polygonOps.add(new LatLng(coordinate[0], coordinate[1]));
-            }
-
-            // adjust the style of the polygon
-            polygonOps.strokeWidth(3.5f).fillColor(Color.RED);
-
-            // add the polygon to the map
-            Polygon polygon = mMap.addPolygon(polygonOps);
-
-            // create a new Parking Lot object associated with the polygon
-            ParkingLot myLot = new ParkingLot(name, polygon);
-            polygon.setTag(myLot);
-
-            // add the lot to mParkingLots
-            mParkingLots.add(myLot);
+        for(int i = 0; i < mParkingLots.size(); i++){
+            ParkingLot lot = mParkingLots.get(i);
+            Polygon poly = mMap.addPolygon(lot.getPolyOps());
+            lot.setPolygon(poly);
+            poly.setTag(lot);
         }
 
         mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
@@ -90,6 +80,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Toast.makeText(MapsActivity.this, text, Toast.LENGTH_SHORT).show();
             }
         });
+
 
         // Move the camera to Terrace Place Garage
         LatLng terracePlaceGarage = new LatLng(36.150285, -86.799749);

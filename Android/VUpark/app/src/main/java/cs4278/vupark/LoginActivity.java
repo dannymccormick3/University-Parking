@@ -1,12 +1,18 @@
 package cs4278.vupark;
 
 import android.content.Intent;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import com.google.android.gms.maps.model.PolygonOptions;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -45,6 +51,15 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if (mConnection.validateCredentials(username, password)) {
+                    ArrayList<ParkingLot> availableLots = mConnection.getAvailableLots();
+                    ArrayList<String> names = new ArrayList<>();
+                    ArrayList<PolygonOptions> polys = new ArrayList<>();
+                    for (ParkingLot p: availableLots){
+                        names.add(p.getName());
+                        polys.add(p.getPolyOps());
+                    }
+                    intent.putExtra("names", names);
+                    intent.putExtra("polys", polys);
                     startActivity(intent);
                 }
                 else{
