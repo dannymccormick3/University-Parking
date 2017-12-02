@@ -75,8 +75,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         username = incomingIntent.getStringExtra("username");
         //TODO: Update this to findViewById for list view instead of null.
-        //listViewAdapter = new ArrayAdapter<String>(this, null, listItems);
-        //setListAdapter(listViewAdapter);
+        listViewAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listItems);
+        lot_list.setAdapter(listViewAdapter);
     }
 
 
@@ -116,6 +116,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final ParkingLot curLot = (ParkingLot)polygon.getTag();
         
         animator.setDisplayedChild(1);
+        listViewAdapter.clear();
         new AsyncTask() {
             @Override
             protected ArrayList<Integer> doInBackground(Object[] objects) {
@@ -127,13 +128,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             @Override
             protected void onPostExecute(Object spaces){
-                listItems = new ArrayList<String>();
                 for(Integer i: (ArrayList<Integer>)spaces){
                     listItems.add("Space " + i);
                     //TODO: Update this to fill in the bottom section of UI
-                    //Toast.makeText(MapsActivity.this, "TEST" + i, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MapsActivity.this, "TEST" + i, Toast.LENGTH_SHORT).show();
                 }
-                //listViewAdapter.notifyDataSetChanged();
+                listViewAdapter.notifyDataSetChanged();
             }
         }.execute();
     }
