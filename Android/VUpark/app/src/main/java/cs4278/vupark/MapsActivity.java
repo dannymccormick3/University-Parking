@@ -27,6 +27,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -50,6 +52,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Button register_button;
     private ListView lot_listview;
 
+    private ParkingLot curLot;
+    private TextView lot_name_entry;
+    private int curSpot;
+    private String curSpotName;
+    private TextView spot_entry;
+    private String spot_cost = "FREE";
+    private TextView cost_entry;
+
+    private TextView confirmation_lot_name_entry;
+    private TextView confirmation_spot_entry;
+    private TextView confirmation_cost_entry;
+    private Button leave_spot_button;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +85,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         register_button = findViewById(R.id.register_button);
         lot_listview = findViewById(R.id.lot_list);
 
+        lot_name_entry = findViewById(R.id.lot_name_entry);
+        spot_entry = findViewById(R.id.spot_entry);
+        cost_entry = findViewById(R.id.cost_entry);
+
+        confirmation_lot_name_entry = findViewById(R.id.confirmation_lot_name_entry);
+        confirmation_spot_entry = findViewById(R.id.confirmation_spot_entry);
+        confirmation_cost_entry = findViewById(R.id.confirmation_cost_entry);
+        leave_spot_button = findViewById(R.id.leave_spot_button);
+
         Intent incomingIntent = getIntent();
         ArrayList<String> names = incomingIntent.getStringArrayListExtra("names");
         ArrayList<PolygonOptions> polys = incomingIntent.getParcelableArrayListExtra("polys");
@@ -82,8 +106,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         lot_listview.setAdapter(listViewAdapter);
         lot_listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                final int pos = position;
-                final String spotString = listItems.get(pos);
+                final String spotString = listItems.get(position);
+                curSpotName = spotString;
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -94,10 +118,45 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }).start();
 
-                listItems.set(position, listItems.get(position) + " reserved");
-                listViewAdapter.notifyDataSetChanged();
+                if(curSpot != position) {
+                    if(curSpot >= 0) {
+//                        String new_text = listItems.get(curSpot).replace(" selected", "");
+//                        listItems.set(curSpot, new_text);
+                    }
+                    curSpot = position;
+//                    listItems.set(position, listItems.get(position) + " selected");
+                    listViewAdapter.notifyDataSetChanged();
+                }
+
             }
         });
+
+        reserve_button.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(curSpot != -1) {
+                    lot_name_entry.setText(curLot.getName());
+                    spot_entry.setText(curSpotName);
+                    cost_entry.setText(spot_cost);
+
+                    animator.setDisplayedChild(2);
+                }
+            }
+        });
+
+        park_button.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(curSpot != -1) {
+                    confirmation_lot_name_entry.setText(curLot.getName());
+                    confirmation_spot_entry.setText(curSpotName);
+                    confirmation_cost_entry.setText(spot_cost);
+
+                    animator.setDisplayedChild(3);
+                }
+            }
+        });
+
     }
 
 
@@ -126,7 +185,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onPolygonClick(Polygon polygon) {onPolygonClicked(polygon);}
         });
 
-
         // Move the camera to Terrace Place Garage
         LatLng terracePlaceGarage = new LatLng(36.150285, -86.799749);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(terracePlaceGarage, 15.0f));
@@ -134,7 +192,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void onPolygonClicked(Polygon polygon){
-        final ParkingLot curLot = (ParkingLot)polygon.getTag();
+        curLot = (ParkingLot)polygon.getTag();
         lot_name.setText(curLot.getName());
         animator.setDisplayedChild(1);
         listViewAdapter.clear();
@@ -149,6 +207,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             @Override
             protected void onPostExecute(Object spaces){
+                curSpot = -1;
                 for(Integer i: (ArrayList<Integer>)spaces){
                     listItems.add("Space " + i);
                 }
