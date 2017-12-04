@@ -12,10 +12,10 @@ import MapKit
 class Lot: NSObject, MKAnnotation {
     var title: String?
     var coordinate: CLLocationCoordinate2D
-    var spaces: [Int]
+    var spaces: [Space]
     var permit: String
     
-    init(title: String, coordinate: CLLocationCoordinate2D, spaces: [Int], permit: String) {
+    init(title: String, coordinate: CLLocationCoordinate2D, spaces: [Space], permit: String) {
         self.title = title
         self.coordinate = coordinate
         self.spaces = spaces
