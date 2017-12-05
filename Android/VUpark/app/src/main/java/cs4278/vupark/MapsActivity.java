@@ -55,6 +55,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String spot_cost = "FREE";
     private TextView cost_entry;
 
+    private Button park_car_button;
+    private Button cancel_reservation_button;
+
     private TextView confirmation_lot_name_entry;
     private TextView confirmation_spot_entry;
     private TextView confirmation_cost_entry;
@@ -80,6 +83,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         register_button = findViewById(R.id.register_button);
         lot_listview = findViewById(R.id.lot_list);
 
+        park_car_button = findViewById(R.id.park_car_button);
+        cancel_reservation_button = findViewById(R.id.cancel_reservation_button);
         lot_name_entry = findViewById(R.id.lot_name_entry);
         spot_entry = findViewById(R.id.spot_entry);
         cost_entry = findViewById(R.id.cost_entry);
@@ -130,6 +135,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 if(curSpot != -1) {
+                    // @TODO UPDATE DATABASE TO SEE A SPOT IS RESERVED
                     lot_name_entry.setText(curLot.getName());
                     spot_entry.setText(curSpotName);
                     cost_entry.setText(spot_cost);
@@ -139,9 +145,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        park_button.setOnClickListener(new Button.OnClickListener() {
+        park_car_button.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(curSpot != -1) {
+                    // @TODO UPDATE DATABASE TO SEE NO LONGER PARKED
+                    confirmation_lot_name_entry.setText(curLot.getName());
+                    confirmation_spot_entry.setText(curSpotName);
+                    confirmation_cost_entry.setText(spot_cost);
+
+                    animator.setDisplayedChild(3);
+                }
+            }
+        });
+
+        cancel_reservation_button.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // @TODO UPDATE DATABASE TO SEE NO LONGER REGISTERED
+                curSpot = -1;
+                animator.setDisplayedChild(1);
+                lot_listview.clearChoices();
+                lot_listview.setSelection(-1);
+                lot_listview.setAdapter(listViewAdapter);
+            }
+        });
+
+        register_button.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // @TODO UPDATE DATABASE TO SEE YOU ARE PARKED
                 if(curSpot != -1) {
                     confirmation_lot_name_entry.setText(curLot.getName());
                     confirmation_spot_entry.setText(curSpotName);
@@ -152,6 +185,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+        leave_spot_button.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(curSpot != -1) {
+                    // @TODO UPDATE DATABASE TO SEE NO LONGER PARKED
+
+                    curSpot = -1;
+                    animator.setDisplayedChild(1);
+                    lot_listview.clearChoices();
+                    lot_listview.setSelection(-1);
+                    lot_listview.setAdapter(listViewAdapter);
+                }
+            }
+        });
     }
 
 
