@@ -10,14 +10,12 @@ import java.util.Date;
 
 public class Reservation {
     private Date mStartDate;
-    private ParkingLot mLot;
-    private int mDuration;
+    String mLotName;
     private int mSpotNumber;
 
-    public Reservation(Date startDateTime, int duration, ParkingLot lot, int spotNumber){
+    public Reservation(Date startDateTime, String lotName, int spotNumber){
         mStartDate = startDateTime;
-        mDuration = duration;
-        mLot = lot;
+        mLotName = lotName;
         mSpotNumber = spotNumber;
     }
 
@@ -29,20 +27,12 @@ public class Reservation {
         mStartDate = startDate;
     }
 
-    public int getDuration() {
-        return mDuration;
+    public String getParkingLot() {
+        return mLotName;
     }
 
-    public void setDuration(int duration){
-        mDuration = duration;
-    }
-
-    public ParkingLot getParkingLot() {
-        return mLot;
-    }
-
-    public void setGarageNumber(ParkingLot lot) {
-        mLot = lot;
+    public void setGarageNumber(String lot) {
+        mLotName = lot;
     }
 
     public int getmSpotNumber() {

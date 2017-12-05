@@ -1,6 +1,10 @@
 package cs4278.vupark;
 
+import android.graphics.Color;
+
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polygon;
+import com.google.android.gms.maps.model.PolygonOptions;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,17 +20,28 @@ public class DBConnection {
     private HashMap<String,String> usernames = new HashMap<>();
     private List<Reservation> curReservations = new ArrayList<>();
     private HashMap<String, String> permitMap = new HashMap<>();
-    private List<ParkingLot> availableLots = new ArrayList<>();
+    private ArrayList<ParkingLot> availableLots = new ArrayList<>();
+    private double[][] coordinates = {
+            {36.150149, -86.800308}, {36.150577, -86.799402}, {36.150287, -86.799186}, {36.149849, -86.800100}};
     public DBConnection() {
         usernames.put("dmccormick", "dpassword");
         permitMap.put("dmccormick", "C");
         usernames.put("aragan", "apassword");
         permitMap.put("aragan", "D");
         Polygon lotPolygon = null;
-        ParkingLot myLot = new ParkingLot("Kensington", lotPolygon);
+        PolygonOptions polygonOps = new PolygonOptions().clickable(true);
+
+        // add the coordinates to the polygon
+        for(double[] coordinate : coordinates) {
+            polygonOps.add(new LatLng(coordinate[0], coordinate[1]));
+        }
+
+        // adjust the style of the polygon
+        polygonOps.strokeWidth(3.5f).fillColor(Color.RED);
+        ParkingLot myLot = new ParkingLot("Terrace Place", polygonOps);
         availableLots.add(myLot);
         Date startDateTime = new Date(2017,12,9,10, 30);
-        Reservation newReservation = new Reservation(startDateTime, 30, myLot, 10);
+        Reservation newReservation = new Reservation(startDateTime, "Terrace", 10);
         curReservations.add(newReservation);
     }
 
@@ -48,12 +63,12 @@ public class DBConnection {
     public boolean validateCredentials(String username, String password) {
         //TODO: Update to actually connect with server.
         try {
-            Thread.sleep(2500);
+            Thread.sleep(250);
         }
         catch(InterruptedException ex){
             Thread.currentThread().interrupt();
         }
-        if (usernames.containsKey("username")){
+        if (usernames.containsKey(username)){
             if(usernames.get(username).equals(password)){
                 return true;
             }
@@ -68,7 +83,7 @@ public class DBConnection {
     public boolean addUser(String username, String password) {
         //TODO: Update to add send new user.
         try {
-            Thread.sleep(2500);
+            Thread.sleep(250);
         }
         catch(InterruptedException ex){
             Thread.currentThread().interrupt();
@@ -84,7 +99,7 @@ public class DBConnection {
     public boolean makeReservation(Reservation reservation) {
         //TODO: Update parameters and body to actually send reservation
         try {
-            Thread.sleep(2500);
+            Thread.sleep(250);
         }
         catch(InterruptedException ex){
             Thread.currentThread().interrupt();
@@ -109,14 +124,14 @@ public class DBConnection {
         return "C";
     }
 
-    public List<ParkingLot> getAvailableLots() {
+    public ArrayList<ParkingLot> getAvailableLots() {
         //TODO: Connect to database and get list of all available lots.
         return availableLots;
     }
 
-    public List<Integer> getAvailableSpots(ParkingLot lot, String permit) {
+    public ArrayList<Integer> getAvailableSpots(ParkingLot lot, String permit) {
         //TODO: Connect to database and get list of all available spots.
-        List<Integer> spots = new ArrayList<>();
+        ArrayList<Integer> spots = new ArrayList<>();
         spots.add(10);
         spots.add(11);
         return spots;
