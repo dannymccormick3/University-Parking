@@ -8,37 +8,16 @@
 
 import UIKit
 import MapKit
+import Firebase
 
 class ParkControllerViewController: UIViewController, MKMapViewDelegate,
 CLLocationManagerDelegate, UITableViewDataSource {
     
     var spaces: [Space] = []
     
-    func loadInitialData() {
-        guard let fileName = Bundle.main.path(forResource: "JSONSample", ofType: ".json")
-            else { return }
-        let optionalData = try? Data(contentsOf: URL(fileURLWithPath: fileName))
-        
-        do {
-            let data = optionalData
-            let json = try JSONSerialization.jsonObject(with: data!) as! [String: Any]
-            let dictionary = json as? [[String: Any]]
-            for xs in dictionary! {
-                let space = xs["Space"] as! Int
-                let title = String(describing: space)
-                let permit = xs["Permit"] as! String
-                let lot = xs["Lot"] as! String
-                let occupied = xs["Occupied"] as! Bool
-                let priceRateClass = xs["PriceRateClass"] as! Int!
-                let coordinate = CLLocationCoordinate2D(latitude: 36.142103, longitude: -86.806105)
-                spaces.append(Space(coordinate: coordinate, title: title, space: space, permit: permit, lot: lot, occupied: occupied, priceRateClass: priceRateClass))
-            }
-        } catch {
-            print("Error serializing JSON.")
-        }
+    let lotRef = Database.database().reference(withPath: "lots")
     
-    }
-    
+    var lots = Array<Lot>()
     
     var selectedLot: Lot?
     
@@ -47,6 +26,8 @@ CLLocationManagerDelegate, UITableViewDataSource {
     var selectedSpace: Space?
     
     var reservedSpaces = [Space]()
+    
+   
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if (selectedLot == nil) {
@@ -62,12 +43,13 @@ CLLocationManagerDelegate, UITableViewDataSource {
         if (selectedLot == nil) {
             cell.textLabel!.text = "No spots available."
         } else {
-            cell.textLabel!.text = "Spot: \(String(describing: selectedLot!.spaces[indexPath.row].title))"
+            cell.textLabel!.text = "Spot: " + selectedLot!.spaces[indexPath.row].getName()
         }
         
         
         return cell
     }
+    
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var parkingLotsButton: UIBarButtonItem!
@@ -134,6 +116,7 @@ CLLocationManagerDelegate, UITableViewDataSource {
         if (ReserveOutlet.titleLabel?.isEqual("Reserve"))! {
             reserveAnnotation = true
             
+            self.mapView.addAnnotation(selectedSpace!)
             
         } else {
             
@@ -183,6 +166,46 @@ CLLocationManagerDelegate, UITableViewDataSource {
         }
     }
     
+    func getAllLots(success: @escaping ([AnyObject]) -> Void) {
+        lotRef.observe(.value, with: { (snapshot) in
+            self.lots.removeAll()
+            let lotDictionary = snapshot.value as? [String : AnyObject] ?? [:]
+            for (key, value) in lotDictionary {
+                
+                if let oneLot = value as? [String: AnyObject] {
+                    
+                    //if oneTicket["companyId"] as? String != nil {
+                        //if (oneTicket["companyId"] as? String)! == user.getCurrentCompany().getCompanyID() {
+                            
+                            let tempLot = Lot(title: "")
+                            tempLot.id = key
+                            tempLot.title = oneLot["title"] as! String
+                            let lat = oneLot["lat"] as! Double
+                            let long = oneLot["long"] as! Double
+                            tempLot.coordinate = CLLocationCoordinate2D(latitude: lat, longitude: long)
+                            let permitDictionary = oneLot["permits"] as! Array<String>
+                            
+                            for value in permitDictionary {
+                                tempLot.permit.append(value)
+                            }
+                            
+                    
+                            let spacesDictionary = oneLot["spaces"] as! Array<[String: AnyObject]>
+                            for oneSpace in spacesDictionary {
+                                let spaceCoordinate = CLLocationCoordinate2D(latitude: lat, longitude: long)
+                                let tempSpace = Space(coordinate: spaceCoordinate, name: oneSpace["name"] as! String, title: oneSpace["name"] as! String, permit: oneSpace["permit"] as! String, lot: tempLot.title, occupied: oneSpace["occupied"] as! Bool, priceRateClass: oneSpace["priceRateClass"] as! String)
+                                
+                                tempLot.addSpace(newSpace: tempSpace)
+                            }
+                            self.lots.append(tempLot)
+                        //}
+                    //}
+                }
+            }
+           return success(self.lots)
+        })
+    }
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let userLocation:CLLocation = locations[0] as CLLocation
         
@@ -204,13 +227,34 @@ CLLocationManagerDelegate, UITableViewDataSource {
         determineCurrentLocation()
         mapView.delegate = self
         reserveAnnotation = false
-        loadInitialData()
-        let kensington = Lot(title: "Kensington", coordinate: CLLocationCoordinate2D(latitude: 36.142103, longitude: -86.806105), spaces: spaces, permit: "F")
+        //observing the data changes
+        
+        //let kensington = Lot(title: "Kensington", coordinate: CLLocationCoordinate2D(latitude: 36.142103, longitude: -86.806105), spaces: spaces, permit: "F")
+        getAllLots(success: { (response) in
+            self.lots = response as! Array<Lot>
+            for object in self.lots {
+                self.mapView.addAnnotation(object)
+            }
+           
+        })
         print(spaces)
-        mapView.addAnnotation(kensington)
+
+        
     }
     
-
+    func editSpace(for lotID: String, updatedLot: Lot) {
+   
+        for i in stride(from: 0, to: updatedLot.spaces.count, by: 1) {
+            
+            lotRef.child(lotID).child("spaces").child("\(i)").updateChildValues([
+                "name": updatedLot.getSpaces()[i].getName(),
+                "occupied": updatedLot.getSpaces()[i].getOccupied(),
+                "permit": updatedLot.getSpaces()[i].getPermit(),
+                "priceRateClass": updatedLot.getSpaces()[i].getPriceClass()
+                ])
+        }
+        
+    }
     /*
     // MARK: - Navigation
 
