@@ -107,12 +107,14 @@
         android:layout_height="0dp"
         android:layout_weight="43">
 
+        <!--index 0-->
         <android.widget.TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/pick_lot_text"/>
 
+        <!--index 1-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -149,18 +151,19 @@
                     android:backgroundTint="@color/pastel_green"
                     android:text="@string/register_button_text"/>
 
-        </android.support.v7.widget.Toolbar>
+            </android.support.v7.widget.Toolbar>
 
-        <ListView
-            android:id="@+id/lot_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:choiceMode="singleChoice"
-            android:listSelector="@color/gray">
-        </ListView>
+            <ListView
+                android:id="@+id/lot_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:choiceMode="singleChoice"
+                android:listSelector="@color/gray">
+            </ListView>
 
-    </LinearLayout>
+        </LinearLayout>
 
+        <!--index 2-->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -290,6 +293,7 @@
 
         </RelativeLayout>
 
+        <!--index 3-->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
