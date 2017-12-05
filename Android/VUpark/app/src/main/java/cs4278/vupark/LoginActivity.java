@@ -1,18 +1,17 @@
 package cs4278.vupark;
 
 import android.content.Intent;
-import android.os.Parcelable;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.PolygonOptions;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -47,10 +46,11 @@ public class LoginActivity extends AppCompatActivity {
         final String username = mUsername;
         final String password = mPassword;
         final Intent intent = new Intent(this, MapsActivity.class);
-        new Thread(new Runnable() {
+        new AsyncTask() {
             @Override
-            public void run() {
-                if (mConnection.validateCredentials(username, password)) {
+            protected Boolean doInBackground(Object[] objects) {
+                boolean valid = mConnection.validateCredentials(username, password);
+                if (valid) {
                     ArrayList<ParkingLot> availableLots = mConnection.getAvailableLots();
                     ArrayList<String> names = new ArrayList<>();
                     ArrayList<PolygonOptions> polys = new ArrayList<>();
@@ -63,12 +63,17 @@ public class LoginActivity extends AppCompatActivity {
                     intent.putExtra("username", username);
                     startActivity(intent);
                 }
-                else{
-                    //TODO: Display message to user saying invalid username/password
-                    return;
+                return valid;
+            }
+
+            @Override
+            protected void onPostExecute(Object valid){
+                if (!(boolean)valid){
+                    Toast.makeText(getApplicationContext(), "Invalid username or password",
+                            Toast.LENGTH_LONG).show();
                 }
             }
-        }).start();
+        }.execute();
 
     }
 }
