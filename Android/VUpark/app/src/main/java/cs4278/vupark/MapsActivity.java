@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -103,7 +102,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     HashMap<String, Object> lot = (HashMap)lotMap.get(lotKey);
                     String lotName = lot.get("title").toString();
                     HashMap<String, Double> polygon = (HashMap)lot.get("polygon");
-                    Log.d("HELP", polygon.get("x1").toString());
                     double[][] coordinates = {
                             {polygon.get("x1"),
                                     polygon.get("y1")},
