@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
@@ -383,7 +382,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if(num == spaceNumber){
                         spaceInfo.put("occupied", occupied);
                         spaceMap.set(i, spaceInfo);
-
                     }
                 }
                 ref2.setValue(spaceMap);
@@ -391,5 +389,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
     }
+
+    @Override
+    protected void onDestroy() {
+        setSpotOccupancy(curSpotNumber, false);
+        super.onDestroy();
+    }
+
 
 }
