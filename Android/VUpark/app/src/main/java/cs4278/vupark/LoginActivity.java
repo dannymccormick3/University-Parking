@@ -25,7 +25,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mVUnetid;
     private EditText mPassword;
     private Button mLoginButton;
-    private HashMap<String, String> userMap = new HashMap<>();
+    private HashMap<String, Object> userMap = new HashMap<>();
     private HashMap<String, Object> lotMap = new HashMap<>();
     private FirebaseDatabase database;
 
@@ -54,8 +54,6 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 userMap = (HashMap)dataSnapshot.getValue();
-                String username = "dmccormick";
-                Log.d(username, userMap.get(username));
             }
 
             @Override
@@ -82,13 +80,19 @@ public class LoginActivity extends AppCompatActivity {
 
     private void tryLogin(String username, String password) {
         final Intent intent = new Intent(this, MapsActivity.class);
-        Log.d(username, userMap.get(username));
-        if (userMap.containsKey(username) && userMap.get(username).equals(password)) {
-            intent.putExtra("username", username);
-            startActivity(intent);
+        if (userMap.containsKey(username)) {
+            HashMap<String, String> user_info = (HashMap)userMap.get(username);
+            if(user_info.get("password").equals(password)) {
+                intent.putExtra("username", username);
+                startActivity(intent);
+            }
+            else {
+                Toast.makeText(getApplicationContext(), "Invalid password",
+                        Toast.LENGTH_LONG).show();
+            }
         }
         else {
-            Toast.makeText(getApplicationContext(), "Invalid username or password",
+            Toast.makeText(getApplicationContext(), "Invalid username",
                     Toast.LENGTH_LONG).show();
         }
 
