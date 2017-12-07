@@ -1,9 +1,11 @@
 package cs4278.vupark;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -11,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewAnimator;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -21,11 +24,18 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -35,6 +45,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ArrayList<ParkingLot> mParkingLots = new ArrayList<>();
     private ArrayList<String> listItems = new ArrayList<>();
     private ArrayAdapter<String> listViewAdapter;
+    private boolean mapReadyToBePainted = false;
 
     private Button park_button;
     private Button lots_button;
@@ -62,11 +73,60 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private TextView confirmation_spot_entry;
     private TextView confirmation_cost_entry;
     private Button leave_spot_button;
+    private FirebaseDatabase database;
+
+    private ParkingLot constructParkingLot(String name, double[][] coordinates){
+        PolygonOptions polygonOps = new PolygonOptions().clickable(true);
+
+        // add the coordinates to the polygon
+        for(double[] coordinate : coordinates) {
+            polygonOps.add(new LatLng(coordinate[0], coordinate[1]));
+        }
+        // adjust the style of the polygon
+        polygonOps.strokeWidth(3.5f).fillColor(Color.RED);
+
+        return new ParkingLot(name, polygonOps);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        database = FirebaseDatabase.getInstance();
+        DatabaseReference lotRef = database.getReference("lots");
+        lotRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                HashMap<String, Object> lotMap = (HashMap)dataSnapshot.getValue();
+                for(String lotKey: lotMap.keySet()){
+                    HashMap<String, Object> lot = (HashMap)lotMap.get(lotKey);
+                    String lotName = lot.get("title").toString();
+                    HashMap<String, Double> polygon = (HashMap)lot.get("polygon");
+                    Log.d("HELP", polygon.get("x1").toString());
+                    double[][] coordinates = {
+                            {polygon.get("x1"),
+                                    polygon.get("y1")},
+                            {polygon.get("x2"),
+                                    polygon.get("y2")},
+                            {polygon.get("x3"),
+                                    polygon.get("y3")},
+                            {polygon.get("x4"),
+                                    polygon.get("y4")}};
+                    mParkingLots.add(constructParkingLot(lotName, coordinates));
+                }
+                if(mapReadyToBePainted){
+                    paintLots();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(getApplicationContext(), "Failed to load lot info from database",
+                        Toast.LENGTH_LONG).show();
+            }
+        });
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -96,12 +156,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Intent incomingIntent = getIntent();
         ArrayList<String> names = incomingIntent.getStringArrayListExtra("names");
-        ArrayList<PolygonOptions> polys = incomingIntent.getParcelableArrayListExtra("polys");
-        for (int i = 0; i < names.size(); i++){
-            mParkingLots.add(new ParkingLot(names.get(i), polys.get(i)));
-        }
         username = incomingIntent.getStringExtra("username");
-        //TODO: Update this to findViewById for list view instead of null.
         listViewAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listItems);
         lot_listview.setAdapter(listViewAdapter);
         lot_listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -214,6 +269,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mapReadyToBePainted = true;
+        if (mParkingLots.size() > 0){
+            paintLots();
+            mapReadyToBePainted = false;
+        }
+    }
+
+    private void paintLots(){
 
         for(int i = 0; i < mParkingLots.size(); i++){
             ParkingLot lot = mParkingLots.get(i);
@@ -230,7 +293,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Move the camera to Terrace Place Garage
         LatLng terracePlaceGarage = new LatLng(36.150285, -86.799749);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(terracePlaceGarage, 15.0f));
-
     }
 
     private void onPolygonClicked(Polygon polygon){

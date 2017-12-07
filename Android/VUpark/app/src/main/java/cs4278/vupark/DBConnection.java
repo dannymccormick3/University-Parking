@@ -1,10 +1,13 @@
 package cs4278.vupark;
 
 import android.graphics.Color;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,6 +20,8 @@ import java.util.List;
  */
 
 public class DBConnection {
+    private FirebaseDatabase database;
+    DatabaseReference lotRef;
     private HashMap<String,String> usernames = new HashMap<>();
     private List<Reservation> curReservations = new ArrayList<>();
     private HashMap<String, String> permitMap = new HashMap<>();
@@ -43,6 +48,10 @@ public class DBConnection {
         Date startDateTime = new Date(2017,12,9,10, 30);
         Reservation newReservation = new Reservation(startDateTime, "Terrace", 10);
         curReservations.add(newReservation);
+        database = FirebaseDatabase.getInstance();
+        lotRef = database.getReference("lots");
+
+        Log.d("TEST", lotRef.getKey());
     }
 
     public void createAccount(String username, String password) {
