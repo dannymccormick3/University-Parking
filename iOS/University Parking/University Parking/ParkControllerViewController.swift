@@ -32,32 +32,43 @@ CLLocationManagerDelegate, UITableViewDataSource {
    
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if (selectedLot == nil) {
-            return 0
+        
+        if !(ReserveOutlet.currentTitle == "Reserve Spot") {
+            return reservedSpaces.count
         } else {
-            return selectedLot!.spaces.count
+            if (selectedLot == nil) {
+                return 0
+            } else {
+                return selectedLot!.spaces.count
+            }
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "AvailableSpotCell", for: indexPath)
         
-        if (selectedLot == nil) {
-            cell.textLabel!.text = "No spots available."
+        if !(ReserveOutlet.currentTitle == "Reserve Spot") {
+            cell.textLabel!.text = "Reserved Spot: " + reservedSpaces[indexPath.row].getName()
         } else {
-            cell.textLabel!.text = "Spot: " + selectedLot!.spaces[indexPath.row].getName()
+            if (selectedLot == nil) {
+                cell.textLabel!.text = "No spots available."
+            } else {
+                cell.textLabel!.text = "Spot: " + selectedLot!.spaces[indexPath.row].getName()
+            }
         }
-        
         
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAtIndexPath indexPath: IndexPath) {
-        print("Reached code")
-        selectedSpace = selectedLot?.spaces[indexPath.row]
-        selectedSpaceLotID = selectedLot?.id
-    
         
+        print("Reached code")
+        
+        if (ReserveOutlet.currentTitle == "Reserve Spot") {
+            selectedSpace = selectedLot?.spaces[indexPath.row]
+            selectedSpaceLotID = selectedLot?.id
+        }
     }
     
     
@@ -121,6 +132,7 @@ CLLocationManagerDelegate, UITableViewDataSource {
             
             TableViewOutlet.isHidden = false
             ReserveOutlet.isHidden = false
+            ParkButtonOutlet.isHidden = false
             
         } else if view.annotation is Space {
             
@@ -149,14 +161,36 @@ CLLocationManagerDelegate, UITableViewDataSource {
             print(selectedLot)
             print(selectedSpace)
 
-            
             self.mapView.addAnnotation(selectedSpace!)
             selectedSpace?.occupied = true
+            reservedSpaces.append(selectedSpace!)
             
             editSpace(for: selectedSpaceLotID!, updatedLot: selectedLot!)
             
+            ReserveOutlet.setTitle("Cancel Reservation", for: .normal)
+            ParkButtonOutlet.setTitle("Leave Lot", for: .normal)
+            TableViewOutlet.reloadData()
+            
         } else {
+            print("ReserveCancelButton")
             print("========Did not return true=========")
+            
+            for annotation in mapView.annotations as [MKAnnotation] {
+                if annotation is Space {
+                    mapView.removeAnnotation(annotation)
+                }
+            }
+            
+            for space in reservedSpaces as [Space] {
+                space.occupied = false
+                editSpace(for: selectedSpaceLotID!, updatedLot: selectedLot!)
+            }
+            
+            reservedSpaces.removeAll()
+            
+            ReserveOutlet.setTitle("Reserve Spot", for: .normal)
+            ParkButtonOutlet.setTitle("Park Now", for: .normal)
+            TableViewOutlet.reloadData()
         }
         
     }
@@ -165,8 +199,42 @@ CLLocationManagerDelegate, UITableViewDataSource {
         
         if (ParkButtonOutlet.currentTitle == "Park Now") {
             
-        } else {
+            reserveAnnotation = true
             
+            print(selectedLot)
+            print(selectedSpace)
+            
+            
+            self.mapView.addAnnotation(selectedSpace!)
+            selectedSpace?.occupied = true
+            reservedSpaces.append(selectedSpace!)
+            
+            editSpace(for: selectedSpaceLotID!, updatedLot: selectedLot!)
+            
+            ParkButtonOutlet.setTitle("Leave Lot", for: .normal)
+            ReserveOutlet.setTitle("Cancel Reservation", for: .normal)
+            TableViewOutlet.reloadData()
+            
+        } else {
+            print("ParkButtonAction")
+            print("========Did not return true=========")
+            
+            for annotation in mapView.annotations as [MKAnnotation] {
+                if annotation is Space {
+                    mapView.removeAnnotation(annotation)
+                }
+            }
+            
+            for space in reservedSpaces as [Space] {
+                space.occupied = false
+                editSpace(for: selectedSpaceLotID!, updatedLot: selectedLot!)
+            }
+            
+            reservedSpaces.removeAll()
+            
+            ParkButtonOutlet.setTitle("Park Now", for: .normal)
+            ReserveOutlet.setTitle("Reserve Spot", for: .normal)
+            TableViewOutlet.reloadData()
         }
         
     }
