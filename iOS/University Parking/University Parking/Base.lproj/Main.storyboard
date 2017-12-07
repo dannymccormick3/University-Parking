@@ -132,20 +132,20 @@
                                     <outlet property="delegate" destination="Q1m-ea-JEa" id="GGZ-5J-Vsm"/>
                                 </connections>
                             </tableView>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8i1-xg-a13">
-                                <rect key="frame" x="198" y="443" width="177" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Park Now"/>
-                                <connections>
-                                    <action selector="ParkButtonAction:" destination="Q1m-ea-JEa" eventType="touchUpInside" id="imQ-Wa-Dvz"/>
-                                </connections>
-                            </button>
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="S5T-b3-nU1">
                                 <rect key="frame" x="0.0" y="443" width="177" height="28"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Reserve Spot"/>
                                 <connections>
                                     <action selector="ReserveCancelButton:" destination="Q1m-ea-JEa" eventType="touchUpInside" id="AZe-wr-fzJ"/>
+                                </connections>
+                            </button>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8i1-xg-a13">
+                                <rect key="frame" x="182" y="443" width="177" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Park Now"/>
+                                <connections>
+                                    <action selector="ParkButtonAction:" destination="Q1m-ea-JEa" eventType="touchUpInside" id="imQ-Wa-Dvz"/>
                                 </connections>
                             </button>
                         </subviews>
