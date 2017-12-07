@@ -1,10 +1,14 @@
 package cs4278.vupark;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -73,6 +77,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private TextView confirmation_cost_entry;
     private Button leave_spot_button;
     private FirebaseDatabase database;
+
+    private final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
 
     private ParkingLot constructParkingLot(String name, double[][] coordinates){
         PolygonOptions polygonOps = new PolygonOptions().clickable(true);
@@ -268,10 +274,51 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_FINE_LOCATION);
+        }
+
         mapReadyToBePainted = true;
         if (mParkingLots.size() > 0){
             paintLots();
             mapReadyToBePainted = false;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    try {
+                        mMap.setMyLocationEnabled(true);
+                    } catch(SecurityException e) {
+                        //
+                    }
+
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
         }
     }
 
