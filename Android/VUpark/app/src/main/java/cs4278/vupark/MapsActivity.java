@@ -161,6 +161,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 final String spotString = listItems.get(position);
                 curSpotName = spotString;
+                //TODO: Update this with Firebase
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -298,6 +299,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         lot_name.setText(curLot.getName());
         animator.setDisplayedChild(1);
         listViewAdapter.clear();
+        //TODO: Update this with firebase.
         new AsyncTask() {
             @Override
             protected ArrayList<Integer> doInBackground(Object[] objects) {
