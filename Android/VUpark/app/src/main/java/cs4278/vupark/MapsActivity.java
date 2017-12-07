@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -45,10 +46,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private String username;
+    private String permit;
     private ArrayList<ParkingLot> mParkingLots = new ArrayList<>();
     private ArrayList<String> listItems = new ArrayList<>();
     private ArrayAdapter<String> listViewAdapter;
     private boolean mapReadyToBePainted = false;
+    private HashMap<String, Object> lotMap;
 
     private Button park_button;
     private Button lots_button;
@@ -64,6 +67,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ParkingLot curLot;
     private TextView lot_name_entry;
     private int curSpot;
+    private int curSpotNumber;
     private String curSpotName;
     private TextView spot_entry;
     private String spot_cost = "FREE";
@@ -103,7 +107,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         lotRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                HashMap<String, Object> lotMap = (HashMap)dataSnapshot.getValue();
+                lotMap = (HashMap)dataSnapshot.getValue();
                 for(String lotKey: lotMap.keySet()){
                     HashMap<String, Object> lot = (HashMap)lotMap.get(lotKey);
                     String lotName = lot.get("title").toString();
@@ -161,6 +165,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent incomingIntent = getIntent();
         ArrayList<String> names = incomingIntent.getStringArrayListExtra("names");
         username = incomingIntent.getStringExtra("username");
+        permit = incomingIntent.getStringExtra("permit");
         listViewAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listItems);
         lot_listview.setAdapter(listViewAdapter);
         lot_listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -195,12 +200,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 if(curSpot != -1) {
-                    // @TODO UPDATE DATABASE TO SEE A SPOT IS RESERVED
                     lot_name_entry.setText(curLot.getName());
                     spot_entry.setText(curSpotName);
                     cost_entry.setText(spot_cost);
 
                     animator.setDisplayedChild(2);
+                    setSpotOccupancy(curSpotNumber, true);
                 }
             }
         });
@@ -209,12 +214,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 if(curSpot != -1) {
-                    // @TODO UPDATE DATABASE TO SEE NO LONGER PARKED
                     confirmation_lot_name_entry.setText(curLot.getName());
                     confirmation_spot_entry.setText(curSpotName);
                     confirmation_cost_entry.setText(spot_cost);
 
                     animator.setDisplayedChild(3);
+                    setSpotOccupancy(curSpotNumber, true);
                 }
             }
         });
@@ -222,25 +227,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         cancel_reservation_button.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // @TODO UPDATE DATABASE TO SEE NO LONGER REGISTERED
                 curSpot = -1;
                 animator.setDisplayedChild(1);
                 lot_listview.clearChoices();
                 lot_listview.setSelection(-1);
                 lot_listview.setAdapter(listViewAdapter);
+                setSpotOccupancy(curSpotNumber, false);
             }
         });
 
         register_button.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // @TODO UPDATE DATABASE TO SEE YOU ARE PARKED
                 if(curSpot != -1) {
                     confirmation_lot_name_entry.setText(curLot.getName());
                     confirmation_spot_entry.setText(curSpotName);
                     confirmation_cost_entry.setText(spot_cost);
 
                     animator.setDisplayedChild(3);
+                    setSpotOccupancy(curSpotNumber, true);
                 }
             }
         });
@@ -249,13 +254,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 if(curSpot != -1) {
-                    // @TODO UPDATE DATABASE TO SEE NO LONGER PARKED
-
                     curSpot = -1;
                     animator.setDisplayedChild(1);
                     lot_listview.clearChoices();
                     lot_listview.setSelection(-1);
                     lot_listview.setAdapter(listViewAdapter);
+                    setSpotOccupancy(curSpotNumber, false);
                 }
             }
         });
@@ -343,28 +347,49 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void onPolygonClicked(Polygon polygon){
         curLot = (ParkingLot)polygon.getTag();
-        lot_name.setText(curLot.getName());
+        String curLotName = curLot.getName();
+        lot_name.setText(curLotName);
         animator.setDisplayedChild(1);
         listViewAdapter.clear();
-        //TODO: Update this with firebase.
-        new AsyncTask() {
-            @Override
-            protected ArrayList<Integer> doInBackground(Object[] objects) {
-                DBConnection mConnection = new DBConnection();
-                String permit = mConnection.getPermit(username);
-                ArrayList<Integer> spaces = mConnection.getAvailableSpots(curLot, permit);
-                return spaces;
-            }
 
-            @Override
-            protected void onPostExecute(Object spaces){
-                curSpot = -1;
-                for(Integer i: (ArrayList<Integer>)spaces){
-                    listItems.add("Space " + i);
+        curSpot = -1;
+        for(String lotKey: lotMap.keySet()){
+            HashMap<String, Object> lot = (HashMap)lotMap.get(lotKey);
+            String lotName = lot.get("title").toString();
+            if(curLotName.equals(lotName)){
+                ArrayList<HashMap<String, Object>> spaceMap = (ArrayList<HashMap<String, Object>>)lot.get("spaces");
+                for(HashMap<String, Object> spaceInfo: spaceMap){
+                    if(!(Boolean)spaceInfo.get("occupied") && permit.equals(spaceInfo.get("permit").toString())){
+                        curSpotNumber = Integer.parseInt(spaceInfo.get("name").toString());
+                        listItems.add("Space " + spaceInfo.get("name").toString());
+                    }
                 }
-                listViewAdapter.notifyDataSetChanged();
             }
-        }.execute();
+        }
+    }
+
+    private void setSpotOccupancy(int spaceNumber, boolean occupied){
+        String curLotName = curLot.getName();
+        DatabaseReference ref1 = database.getReference("lots");
+        for(String lotKey: lotMap.keySet()){
+            HashMap<String, Object> lot = (HashMap)lotMap.get(lotKey);
+            String lotName = lot.get("title").toString();
+            if(curLotName.equals(lotName)){
+                DatabaseReference ref2 = ref1.child(lotKey).child("spaces");
+                ArrayList<HashMap<String, Object>> spaceMap = (ArrayList<HashMap<String, Object>>)lot.get("spaces");
+                for(int i = 0; i < spaceMap.size(); i++){
+                    HashMap<String, Object> spaceInfo = spaceMap.get(i);
+                    int num = Integer.parseInt(spaceInfo.get("name").toString());
+                    if(num == spaceNumber){
+                        spaceInfo.put("occupied", occupied);
+                        spaceMap.set(i, spaceInfo);
+
+                    }
+                }
+                ref2.setValue(spaceMap);
+            }
+        }
+
     }
 
 }

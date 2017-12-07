@@ -84,6 +84,7 @@ public class LoginActivity extends AppCompatActivity {
             HashMap<String, String> user_info = (HashMap)userMap.get(username);
             if(user_info.get("password").equals(password)) {
                 intent.putExtra("username", username);
+                intent.putExtra("permit", user_info.get("permit"));
                 startActivity(intent);
             }
             else {
