@@ -12,7 +12,7 @@ const LIMIT = 100;
 connection.connect((err)=> {
 })
 app.get('/makeReservation', (req, res) => {
-	var toIns = {}
+	let toIns = {}
 	toIns.UserID = req.query.UserID;
 	toIns.Lot = req.query.Lot;
 	toIns.Space = req.query.Space;
@@ -24,11 +24,14 @@ app.get('/makeReservation', (req, res) => {
 		toIns.ScheduleEnd = moment().add(30, 'minutes').format('YYYY-MM-DD HH:MM:SS');
 	}
 	toIns.Completion = null;
-	var startquery = "INSERT INTO Reservations SET ?";
+	let startquery = "INSERT INTO Reservations SET ?";
 	connection.query(startquery, toIns, (err, sqlres) => {
-		if(err){ throw err;}
+		if(err){ 
+			let resObj = {"Failure": "True"};
+			res.send(JSON.stringify(resObj));
+			console.log(err);}
 		else{
-			var obj = {};
+			let obj = {};
 			obj["ScheduleEnd"] = sqlres.ScheduleEnd;
 			obj["Lot"] = sqlres.Lot;
 			obj["Space"] = sqlres.Space;
@@ -40,19 +43,21 @@ app.get('/makeReservation', (req, res) => {
 });
 
 app.get('/getAvailableLots', (req, res) => {
-	var startquery = "SELECT Lot, Count(Space) as Numspaces "
+	let startquery = "SELECT Lot, Count(Space) as Numspaces "
 										+ "FROM Spaces "
 										+ "WHERE Occupied = 0 AND Permit = \" " + req.query.permit + "\" "
 										+ " GROUP BY Lot";
 	console.log(startquery);
 	connection.query(startquery, (err, rows) => {
 		if(err) {
+			let resObj = {"Failure": "True"};
+			res.send(JSON.stringify(resObj));
 			console.log(err);
 		}
-		var obj = {};
-		var count =0;
+		let obj = {};
+		let count =0;
 		rows.forEach( (row) => {
-			var temp = {};
+			let temp = {};
 			temp.Lot = row.Lot;
 			temp.Spaces = row.Numspaces;
 			obj[count.toString()]= temp;
@@ -63,17 +68,19 @@ app.get('/getAvailableLots', (req, res) => {
 });
 
 app.get('/getReservations', (req, res) => {
-	var startquery = "SELECT * "
+	let startquery = "SELECT * "
 										+ "FROM Reservations "
 										+ "WHERE UserID = " + req.query.UserID +
 										" LIMIT " + LIMIT;
 	console.log(startquery);
 	connection.query(startquery, (err, rows) => {
 		if(err) {
+			let resObj = {"Failure": "True"};
+			res.send(JSON.stringify(resObj));
 			console.log(err);
 		}
-		var obj = {};
-		var count =0;
+		let obj = {};
+		let count =0;
 		rows.forEach( (row) => {
 		  //	UserID VARCHAR(256) NOT NULL,
 			// 	Lot VARCHAR(256) NOT NULL,
@@ -82,7 +89,7 @@ app.get('/getReservations', (req, res) => {
 			// 	ScheduleEnd DateTime NOT NULL,
 			// 	Completion DateTime,
 			// 	ReservationPrice Float,
-			var temp = {};
+			let temp = {};
 			temp.Lot = row.Lot;
 			temp.Space = row.Space;
 			temp.ScheduleStart = row.ScheduleStart;
@@ -98,15 +105,17 @@ app.get('/getReservations', (req, res) => {
 
 
 app.get('/getPermit', (req, res) => {
-	var startquery = "SELECT Permit "
+	let startquery = "SELECT Permit "
 										+ "FROM Accounts "
 										+ "WHERE UserID = " + req.query.UserID;
 	console.log(startquery);
 	connection.query(startquery, (err, rows) => {
 		if(err) {
+			let resObj = {"Failure": "True"};
+			res.send(JSON.stringify(resObj));
 			console.log(err);
 		}
-		var obj = {};
+		let obj = {};
 		rows.forEach( (row) => {
 			obj['permit']= row.Permit;
 		});
@@ -114,9 +123,27 @@ app.get('/getPermit', (req, res) => {
 	})
 });
 
+app.get('/setPermit', (req, res) => {
+	let startquery = "UPDATE Accounts "
+										+ "Set Permit =  " + req.query.Permit
+										+ " WHERE UserID = " + req.query.UserID;
+	console.log(startquery);
+	connection.query(startquery, (err, result) => {
+		if(err) {
+			let resObj = {"Failure": "True"};
+			res.send(JSON.stringify(resObj));
+			console.log(err);
+		}
+		let obj = {};
+		obj['UserID'] = result.UserID;
+		obj['Permit'] = result.Permit;
+		res.send(JSON.stringify(obj));
+	})
+});
+
 app.get('/getAvailableSpots', (req, res) => {
-	var Date = new Date();
-	var startquery = "SELECT Space, RatePerHour, ReservationPrice "
+	let Date = new Date();
+	let startquery = "SELECT Space, RatePerHour, ReservationPrice "
 										+ "FROM Spaces x, Prices y "
 										+ "WHERE x.Occupied = 0 AND x.Permit = \" " + req.query.permit + "\" "
 										+ " AND x.PriceRateClass = y.PriceRateClass AND  GROUP BY Lot";
@@ -125,10 +152,10 @@ app.get('/getAvailableSpots', (req, res) => {
 		if(err) {
 			console.log(err);
 		}
-		var obj = {};
-		var count =0;
+		let obj = {};
+		let count =0;
 		rows.forEach( (row) => {
-			var temp = {};
+			let temp = {};
 			temp.Lot = row.Lot;
 			temp.Spaces = row.Numspaces;
 			obj[count.toString()]= temp;
@@ -136,6 +163,50 @@ app.get('/getAvailableSpots', (req, res) => {
 		});
 		res.send(JSON.stringify(obj));
 	})
+});
+
+app.get('/checkIn', (req, res) => {
+	let startquery = "SELECT * "
+		+ "FROM Reservations "
+		+ "WHERE UserID = " + req.query.UserID +
+		" AND Lot = " + req.query.Lot + 
+		" AND Space = " + req.query.Space;
+	console.log(startquery);
+	connection.query(startquery, (err, rows) => {
+	if(err) {
+		let resObj = {"Failure": "True"};
+		res.send(JSON.stringify(resObj));
+		console.log(err);
+	}
+	let obj = {};
+	let count = 0;
+	rows.forEach( (row) => {
+		count++;
+	});
+	if(count ==0) {
+		let toIns = {}
+		toIns["UserID"] = req.query.UserID;
+		toIns["Lot"] = req.query.Lot;
+		toIns["Space"] = req.query.Space;
+		toIns["TimeIn"] = moment().format('YYYY-MM-DD HH:MM:SS');
+		let curquery = "INSERT INTO Logs SET ?";
+		connection.query(curquery, toIns, (err, sqlres)=> {
+			if(err){ 
+				let resObj = {"Failure": "True"};
+				res.send(JSON.stringify(resObj));
+				console.log(err);
+			} else {
+				//#TODO update occupied in logs, maybe have that be before the reservation check to make it more easily undoable
+				let resObj = {"Success":"Parked in available spot"};
+				res.send(JSON.stringify(resObj));
+			}
+		})	
+	} else if (count ==1) {
+
+	}
+	res.send(JSON.stringify(obj));
+	})
+	
 });
 
 
