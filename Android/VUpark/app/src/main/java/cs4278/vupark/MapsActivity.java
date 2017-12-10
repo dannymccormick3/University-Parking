@@ -83,18 +83,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
 
-    private ParkingLot constructParkingLot(String name, double[][] coordinates){
-        PolygonOptions polygonOps = new PolygonOptions().clickable(true);
-
-        // add the coordinates to the polygon
-        for(double[] coordinate : coordinates) {
-            polygonOps.add(new LatLng(coordinate[0], coordinate[1]));
-        }
-        // adjust the style of the polygon
-        polygonOps.strokeWidth(3.5f).fillColor(Color.RED);
-
-        return new ParkingLot(name, polygonOps);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,27 +127,134 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        // Obtain references to the buttons on the top toolbar
         park_button = findViewById(R.id.park_button);
         lots_button = findViewById(R.id.lots_button);
         account_button = findViewById(R.id.account_button);
         info_button = findViewById(R.id.help_button);
 
+        // Obtain references to the components in the "Park" tab (the only tab implemented for MVP)
+
+        // Reference to the animator allowing the bottom portion of the view to change
         animator = findViewById(R.id.animator);
+
+        // References to components from the view after selecting a lot
         lot_name = findViewById(R.id.lot_name);
         reserve_button = findViewById(R.id.reserve_button);
         register_button = findViewById(R.id.register_button);
         lot_listview = findViewById(R.id.lot_list);
 
+        // Tie functionality to buttons on view after selecting lot
+
+        // Reserve spot button functionality
+        reserve_button.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // If the current spot is valid
+                if(curSpot != -1) {
+                    // update reserved lot, spot, and cost
+                    lot_name_entry.setText(curLot.getName());
+                    spot_entry.setText(curSpotName);
+                    cost_entry.setText(spot_cost);
+
+                    // move to the reserved view
+                    animator.setDisplayedChild(2);
+
+                    // update the database
+                    setSpotOccupancy(curSpotNumber, true);
+                }
+            }
+        });
+
+        // Register button functionality (mark that you've parked)
+        register_button.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(curSpot != -1) {
+                    // update parked lot, spot, and cost
+                    confirmation_lot_name_entry.setText(curLot.getName());
+                    confirmation_spot_entry.setText(curSpotName);
+                    confirmation_cost_entry.setText(spot_cost);
+
+                    // move to the parked view
+                    animator.setDisplayedChild(3);
+
+                    // update the database to flag the car as parked
+                    setSpotOccupancy(curSpotNumber, true);
+                }
+            }
+        });
+
+        // References to components from the view after reserving a spot
         park_car_button = findViewById(R.id.park_car_button);
         cancel_reservation_button = findViewById(R.id.cancel_reservation_button);
         lot_name_entry = findViewById(R.id.lot_name_entry);
         spot_entry = findViewById(R.id.spot_entry);
         cost_entry = findViewById(R.id.cost_entry);
 
+        // Tie functionality to buttons on view after reserving a spot
+
+        // Park button functionality
+        park_car_button.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(curSpot != -1) {
+                    // update parked lot, spot, and cost
+                    confirmation_lot_name_entry.setText(curLot.getName());
+                    confirmation_spot_entry.setText(curSpotName);
+                    confirmation_cost_entry.setText(spot_cost);
+
+                    // move to the parked view
+                    animator.setDisplayedChild(3);
+
+                    // update the database to flag the car as parked
+                    setSpotOccupancy(curSpotNumber, true);
+                }
+            }
+        });
+
+        // Cancel reservation button functionality
+        cancel_reservation_button.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Change the current spot to -1 (signifying no spot selected)
+                curSpot = -1;
+
+                // Switch to the default view, and clear the selection
+                animator.setDisplayedChild(1);
+                lot_listview.clearChoices();
+                lot_listview.setAdapter(listViewAdapter);
+
+                // Update the database, clearing the reservation
+                setSpotOccupancy(curSpotNumber, false);
+            }
+        });
+
+        // References to components from the view after marking that you have parked
         confirmation_lot_name_entry = findViewById(R.id.confirmation_lot_name_entry);
         confirmation_spot_entry = findViewById(R.id.confirmation_spot_entry);
         confirmation_cost_entry = findViewById(R.id.confirmation_cost_entry);
         leave_spot_button = findViewById(R.id.leave_spot_button);
+
+        // Tie functionality to buttons on view after marking that you have parked
+        leave_spot_button.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(curSpot != -1) {
+                    // Change the current spot to -1 (signifying no spot selected)
+                    curSpot = -1;
+
+                    // Switch to the default view, and clear the selection
+                    animator.setDisplayedChild(1);
+                    lot_listview.clearChoices();
+                    lot_listview.setSelection(-1);
+                    lot_listview.setAdapter(listViewAdapter);
+
+                    // Update the database, clearing the reservation
+                    setSpotOccupancy(curSpotNumber, false);
+                }
+            }
+        });
 
         Intent incomingIntent = getIntent();
         ArrayList<String> names = incomingIntent.getStringArrayListExtra("names");
@@ -183,86 +278,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }).start();
 
                 if(curSpot != position) {
-                    if(curSpot >= 0) {
-//                        String new_text = listItems.get(curSpot).replace(" selected", "");
-//                        listItems.set(curSpot, new_text);
-                    }
                     curSpot = position;
-//                    listItems.set(position, listItems.get(position) + " selected");
                     listViewAdapter.notifyDataSetChanged();
                 }
 
             }
         });
-
-        reserve_button.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(curSpot != -1) {
-                    lot_name_entry.setText(curLot.getName());
-                    spot_entry.setText(curSpotName);
-                    cost_entry.setText(spot_cost);
-
-                    animator.setDisplayedChild(2);
-                    setSpotOccupancy(curSpotNumber, true);
-                }
             }
-        });
-
-        park_car_button.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(curSpot != -1) {
-                    confirmation_lot_name_entry.setText(curLot.getName());
-                    confirmation_spot_entry.setText(curSpotName);
-                    confirmation_cost_entry.setText(spot_cost);
-
-                    animator.setDisplayedChild(3);
-                    setSpotOccupancy(curSpotNumber, true);
-                }
-            }
-        });
-
-        cancel_reservation_button.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                curSpot = -1;
-                animator.setDisplayedChild(1);
-                lot_listview.clearChoices();
-                lot_listview.setSelection(-1);
-                lot_listview.setAdapter(listViewAdapter);
-                setSpotOccupancy(curSpotNumber, false);
-            }
-        });
-
-        register_button.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(curSpot != -1) {
-                    confirmation_lot_name_entry.setText(curLot.getName());
-                    confirmation_spot_entry.setText(curSpotName);
-                    confirmation_cost_entry.setText(spot_cost);
-
-                    animator.setDisplayedChild(3);
-                    setSpotOccupancy(curSpotNumber, true);
-                }
-            }
-        });
-
-        leave_spot_button.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(curSpot != -1) {
-                    curSpot = -1;
-                    animator.setDisplayedChild(1);
-                    lot_listview.clearChoices();
-                    lot_listview.setSelection(-1);
-                    lot_listview.setAdapter(listViewAdapter);
-                    setSpotOccupancy(curSpotNumber, false);
-                }
-            }
-        });
-    }
 
 
     /**
@@ -310,19 +332,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     } catch(SecurityException e) {
                         //
                     }
-
-
-                } else {
-
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
                 }
-                return;
             }
 
             // other 'case' lines to check for other
             // permissions this app might request
         }
+    }
+
+    private ParkingLot constructParkingLot(String name, double[][] coordinates){
+        PolygonOptions polygonOps = new PolygonOptions().clickable(true);
+
+        // add the coordinates to the polygon
+        for(double[] coordinate : coordinates) {
+            polygonOps.add(new LatLng(coordinate[0], coordinate[1]));
+        }
+        // adjust the style of the polygon
+        polygonOps.strokeWidth(3.5f).fillColor(Color.RED);
+
+        return new ParkingLot(name, polygonOps);
     }
 
     private void paintLots(){
@@ -391,10 +419,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onStop() {
+        super.onStop();
         setSpotOccupancy(curSpotNumber, false);
-        super.onDestroy();
     }
-
-
 }
