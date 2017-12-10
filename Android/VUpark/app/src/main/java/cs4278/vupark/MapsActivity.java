@@ -263,17 +263,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 final String spotString = listItems.get(position);
                 curSpotName = spotString;
-                //TODO: Update this with Firebase
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        int spotNumber = Integer.parseInt(spotString.substring(6)); //Parse "Space <num>"
-                        Reservation r = new Reservation(new Date(), lot_name.getText().toString(), spotNumber);
-                        DBConnection mConnection = new DBConnection();
-                        mConnection.makeReservation(r);
-                    }
-                }).start();
-
                 if(curSpot != position) {
                     curSpot = position;
                     listViewAdapter.notifyDataSetChanged();
