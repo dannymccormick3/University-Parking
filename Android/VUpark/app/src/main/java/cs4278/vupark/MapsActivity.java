@@ -44,7 +44,6 @@ import java.util.List;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private String username;
     private String permit;
     private ArrayList<ParkingLot> mParkingLots = new ArrayList<>();
     private ArrayList<String> listItems = new ArrayList<>();
@@ -257,7 +256,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Intent incomingIntent = getIntent();
         ArrayList<String> names = incomingIntent.getStringArrayListExtra("names");
-        username = incomingIntent.getStringExtra("username");
         permit = incomingIntent.getStringExtra("permit");
         listViewAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listItems);
         lot_listview.setAdapter(listViewAdapter);
