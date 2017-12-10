@@ -8,37 +8,16 @@
 
 import UIKit
 import MapKit
+import Firebase
 
 class ParkControllerViewController: UIViewController, MKMapViewDelegate,
 CLLocationManagerDelegate, UITableViewDataSource {
     
     var spaces: [Space] = []
     
-    func loadInitialData() {
-        guard let fileName = Bundle.main.path(forResource: "JSONSample", ofType: ".json")
-            else { return }
-        let optionalData = try? Data(contentsOf: URL(fileURLWithPath: fileName))
-        
-        do {
-            let data = optionalData
-            let json = try JSONSerialization.jsonObject(with: data!) as! [String: Any]
-            let dictionary = json as? [[String: Any]]
-            for xs in dictionary! {
-                let space = xs["Space"] as! Int
-                let title = String(describing: space)
-                let permit = xs["Permit"] as! String
-                let lot = xs["Lot"] as! String
-                let occupied = xs["Occupied"] as! Bool
-                let priceRateClass = xs["PriceRateClass"] as! Int!
-                let coordinate = CLLocationCoordinate2D(latitude: 36.142103, longitude: -86.806105)
-                spaces.append(Space(coordinate: coordinate, title: title, space: space, permit: permit, lot: lot, occupied: occupied, priceRateClass: priceRateClass))
-            }
-        } catch {
-            print("Error serializing JSON.")
-        }
+    let lotRef = Database.database().reference(withPath: "lots")
     
-    }
-    
+    var lots = Array<Lot>()
     
     var selectedLot: Lot?
     
@@ -48,26 +27,50 @@ CLLocationManagerDelegate, UITableViewDataSource {
     
     var reservedSpaces = [Space]()
     
+    var selectedSpaceLotID: String?
+    
+   
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if (selectedLot == nil) {
-            return 0
+        
+        if !(ReserveOutlet.currentTitle == "Reserve Spot") {
+            return reservedSpaces.count
         } else {
-            return selectedLot!.spaces.count
+            if (selectedLot == nil) {
+                return 0
+            } else {
+                return selectedLot!.spaces.count
+            }
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "AvailableSpotCell", for: indexPath)
         
-        if (selectedLot == nil) {
-            cell.textLabel!.text = "No spots available."
+        if !(ReserveOutlet.currentTitle == "Reserve Spot") {
+            cell.textLabel!.text = "Reserved Spot: " + reservedSpaces[indexPath.row].getName()
         } else {
-            cell.textLabel!.text = "Spot: \(String(describing: selectedLot!.spaces[indexPath.row].title))"
+            if (selectedLot == nil) {
+                cell.textLabel!.text = "No spots available."
+            } else {
+                cell.textLabel!.text = "Spot: " + selectedLot!.spaces[indexPath.row].getName()
+            }
         }
-        
         
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAtIndexPath indexPath: IndexPath) {
+        
+        print("Reached code")
+        
+        if (ReserveOutlet.currentTitle == "Reserve Spot") {
+            selectedSpace = selectedLot?.spaces[indexPath.row]
+            selectedSpaceLotID = selectedLot?.id
+        }
+    }
+    
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var parkingLotsButton: UIBarButtonItem!
@@ -87,7 +90,7 @@ CLLocationManagerDelegate, UITableViewDataSource {
             
             // guard let annotation = annotation as? Lot else { return nil }
             
-            let identifier = "marker"
+            let identifier = "lot"
             var view: MKMarkerAnnotationView
             
             if let dequeuedView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
@@ -105,7 +108,13 @@ CLLocationManagerDelegate, UITableViewDataSource {
             
         } else if annotation is Space {
             
-            return nil
+            let identifier = "space"
+            let view = MKMarkerAnnotationView()
+
+            view.markerTintColor = .cyan
+
+            return view
+            
             
         }
         return nil
@@ -113,12 +122,26 @@ CLLocationManagerDelegate, UITableViewDataSource {
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         
-        selectedLot = view.annotation as! Lot
+        if view.annotation is Lot {
+            
+            TableViewOutlet.reloadData()
+            
+            selectedLot = view.annotation as? Lot
+            
+            TableViewOutlet.reloadData()
+            
+            TableViewOutlet.isHidden = false
+            ReserveOutlet.isHidden = false
+            ParkButtonOutlet.isHidden = false
+            
+        } else if view.annotation is Space {
+            
+            selectedSpace = view.annotation as! Space
+            
+            TableViewOutlet.reloadData()
+            
+        }
         
-        TableViewOutlet.reloadData()
-        
-        TableViewOutlet.isHidden = false
-        ReserveOutlet.isHidden = false
 //        let lotTitle = lot.title
 //        let permitInfo = lot.permit
 //        let availableSpaces = lot.spaces
@@ -131,22 +154,87 @@ CLLocationManagerDelegate, UITableViewDataSource {
     
     @IBAction func ReserveCancelButton(_ sender: Any) {
         
-        if (ReserveOutlet.titleLabel?.isEqual("Reserve"))! {
+        if (ReserveOutlet.currentTitle == "Reserve Spot") {
+            
             reserveAnnotation = true
             
+            print(selectedLot)
+            print(selectedSpace)
+
+            self.mapView.addAnnotation(selectedSpace!)
+            selectedSpace?.occupied = true
+            reservedSpaces.append(selectedSpace!)
+            
+            editSpace(for: selectedSpaceLotID!, updatedLot: selectedLot!)
+            
+            ReserveOutlet.setTitle("Cancel Reservation", for: .normal)
+            ParkButtonOutlet.setTitle("Leave Lot", for: .normal)
+            TableViewOutlet.reloadData()
             
         } else {
+            print("ReserveCancelButton")
+            print("========Did not return true=========")
             
+            for annotation in mapView.annotations as [MKAnnotation] {
+                if annotation is Space {
+                    mapView.removeAnnotation(annotation)
+                }
+            }
+            
+            for space in reservedSpaces as [Space] {
+                space.occupied = false
+                editSpace(for: selectedSpaceLotID!, updatedLot: selectedLot!)
+            }
+            
+            reservedSpaces.removeAll()
+            
+            ReserveOutlet.setTitle("Reserve Spot", for: .normal)
+            ParkButtonOutlet.setTitle("Park Now", for: .normal)
+            TableViewOutlet.reloadData()
         }
         
     }
     
     @IBAction func ParkButtonAction(_ sender: Any) {
         
-        if (ParkButtonOutlet.titleLabel?.isEqual("Park Now"))! {
+        if (ParkButtonOutlet.currentTitle == "Park Now") {
+            
+            reserveAnnotation = true
+            
+            print(selectedLot)
+            print(selectedSpace)
+            
+            
+            self.mapView.addAnnotation(selectedSpace!)
+            selectedSpace?.occupied = true
+            reservedSpaces.append(selectedSpace!)
+            
+            editSpace(for: selectedSpaceLotID!, updatedLot: selectedLot!)
+            
+            ParkButtonOutlet.setTitle("Leave Lot", for: .normal)
+            ReserveOutlet.setTitle("Cancel Reservation", for: .normal)
+            TableViewOutlet.reloadData()
             
         } else {
+            print("ParkButtonAction")
+            print("========Did not return true=========")
             
+            for annotation in mapView.annotations as [MKAnnotation] {
+                if annotation is Space {
+                    mapView.removeAnnotation(annotation)
+                }
+            }
+            
+            for space in reservedSpaces as [Space] {
+                space.occupied = false
+                editSpace(for: selectedSpaceLotID!, updatedLot: selectedLot!)
+            }
+            
+            reservedSpaces.removeAll()
+            
+            ParkButtonOutlet.setTitle("Park Now", for: .normal)
+            ReserveOutlet.setTitle("Reserve Spot", for: .normal)
+            TableViewOutlet.reloadData()
         }
         
     }
@@ -183,6 +271,52 @@ CLLocationManagerDelegate, UITableViewDataSource {
         }
     }
     
+    func getAllLots(success: @escaping ([AnyObject]) -> Void) {
+        lotRef.observe(.value, with: { (snapshot) in
+            self.lots.removeAll()
+            let lotDictionary = snapshot.value as? [String : AnyObject] ?? [:]
+            for (key, value) in lotDictionary {
+                
+                if let oneLot = value as? [String: AnyObject] {
+                    
+                    //if oneTicket["companyId"] as? String != nil {
+                        //if (oneTicket["companyId"] as? String)! == user.getCurrentCompany().getCompanyID() {
+                            
+                            let tempLot = Lot(title: "")
+                            tempLot.id = key
+                            tempLot.title = oneLot["title"] as! String
+                            let lat = oneLot["lat"] as! Double
+                            let long = oneLot["long"] as! Double
+                            tempLot.coordinate = CLLocationCoordinate2D(latitude: lat, longitude: long)
+                            let permitDictionary = oneLot["permits"] as! Array<String>
+                            
+                            for value in permitDictionary {
+                                tempLot.permit.append(value)
+                            }
+                            
+                    
+                            let spacesDictionary = oneLot["spaces"] as! Array<[String: AnyObject]>
+                            for oneSpace in spacesDictionary {
+                                
+                                let lat = lat + 0.001
+                                let long = long + 0.001
+                                
+                                let spaceCoordinate = CLLocationCoordinate2D(latitude: lat, longitude: long)
+                                let tempSpace = Space(coordinate: spaceCoordinate, name: oneSpace["name"] as! String, title: oneSpace["name"] as! String, permit: oneSpace["permit"] as! String, lot: tempLot.title, occupied: oneSpace["occupied"] as! Bool, priceRateClass: oneSpace["priceRateClass"] as! String)
+                                if !(tempSpace.occupied!) {
+                                    tempLot.addSpace(newSpace: tempSpace)
+                                }
+                                
+                            }
+                            self.lots.append(tempLot)
+                        //}
+                    //}
+                }
+            }
+           return success(self.lots)
+        })
+    }
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let userLocation:CLLocation = locations[0] as CLLocation
         
@@ -192,10 +326,10 @@ CLLocationManagerDelegate, UITableViewDataSource {
         mapView.setRegion(region, animated: true)
         
         // Drop a pin at user's Current Location
-        let myAnnotation: MKPointAnnotation = MKPointAnnotation()
-        myAnnotation.coordinate = CLLocationCoordinate2DMake(userLocation.coordinate.latitude, userLocation.coordinate.longitude);
-        myAnnotation.title = "Current location"
-        mapView.addAnnotation(myAnnotation)
+//        let myAnnotation: MKPointAnnotation = MKPointAnnotation()
+//        myAnnotation.coordinate = CLLocationCoordinate2DMake(userLocation.coordinate.latitude, userLocation.coordinate.longitude);
+//        myAnnotation.title = "Current location"
+//        mapView.addAnnotation(myAnnotation)
     }
     
     override func viewDidLoad() {
@@ -204,13 +338,34 @@ CLLocationManagerDelegate, UITableViewDataSource {
         determineCurrentLocation()
         mapView.delegate = self
         reserveAnnotation = false
-        loadInitialData()
-        let kensington = Lot(title: "Kensington", coordinate: CLLocationCoordinate2D(latitude: 36.142103, longitude: -86.806105), spaces: spaces, permit: "F")
+        //observing the data changes
+        
+        //let kensington = Lot(title: "Kensington", coordinate: CLLocationCoordinate2D(latitude: 36.142103, longitude: -86.806105), spaces: spaces, permit: "F")
+        getAllLots(success: { (response) in
+            self.lots = response as! Array<Lot>
+            for object in self.lots {
+                self.mapView.addAnnotation(object)
+            }
+           
+        })
         print(spaces)
-        mapView.addAnnotation(kensington)
+
+        
     }
     
-
+    func editSpace(for lotID: String, updatedLot: Lot) {
+   
+        for i in stride(from: 0, to: updatedLot.spaces.count, by: 1) {
+            
+            lotRef.child(lotID).child("spaces").child("\(i)").updateChildValues([
+                "name": updatedLot.getSpaces()[i].getName(),
+                "occupied": updatedLot.getSpaces()[i].getOccupied(),
+                "permit": updatedLot.getSpaces()[i].getPermit(),
+                "priceRateClass": updatedLot.getSpaces()[i].getPriceClass()
+                ])
+        }
+        
+    }
     /*
     // MARK: - Navigation
 

@@ -12,31 +12,48 @@ import MapKit
 class Space: NSObject, MKAnnotation {
     var coordinate: CLLocationCoordinate2D
     var title: String?
-    var space: Int?
+    var name: String?
     var permit: String?
     var lot: String?
     var occupied: Bool?
-    var priceRateClass: Int?
+    var priceRateClass: String?
     
-    init(coordinate: CLLocationCoordinate2D, title: String?, space:Int?, permit: String?, lot: String?, occupied: Bool?, priceRateClass: Int?) {
+    init(coordinate: CLLocationCoordinate2D, name: String?, title: String?, permit: String?, lot: String?, occupied: Bool?, priceRateClass: String?) {
         self.coordinate = coordinate
-        self.space = space
-        self.title = String(describing: space)
+        self.name = name
+        self.title = name
         self.permit = permit
         self.lot = lot
         self.occupied = occupied
         self.priceRateClass = priceRateClass
     }
     
-    init?(json: [String: Any]) {
-        self.space = json["Space"] as! Int
-        self.title = String(describing: space)
-        self.permit = json["Permit"] as! String
-        self.lot = json["Lot"] as! String
-        self.occupied = json["Occupied"] as! Bool
-        self.priceRateClass = json["PriceRateClass"] as! Int!
-        self.coordinate = CLLocationCoordinate2D(latitude: 36.142103, longitude: -86.806105)
-
+    func getName() -> String  {
+        if name != nil {
+            return name!
+        }
+        else {
+            return ""
+        }
     }
-
+    
+    func getOccupied() -> Bool {
+        return occupied!
+    }
+    
+    func getPriceClass() -> String {
+        return priceRateClass!
+    }
+    
+    func getPermit() -> String {
+        return permit!
+    }
+    var subtitle: String? {
+        return lot
+    }
+    
+    var markerTintColor: UIColor  {
+        return .cyan
+    }
+    
 }

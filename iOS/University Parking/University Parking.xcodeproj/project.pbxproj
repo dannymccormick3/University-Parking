@@ -19,6 +19,10 @@
 		52BD6AE81FBD20DF0086B628 /* University_ParkingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD6AE71FBD20DF0086B628 /* University_ParkingTests.swift */; };
 		52BD6AF31FBD20DF0086B628 /* University_ParkingUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD6AF21FBD20DF0086B628 /* University_ParkingUITests.swift */; };
 		52BD6B031FBD241C0086B628 /* ParkControllerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BD6B021FBD241C0086B628 /* ParkControllerViewController.swift */; };
+		6755889B776DCAB582FA39CF /* Pods_University_ParkingUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88F6324AA13115A177946C95 /* Pods_University_ParkingUITests.framework */; };
+		A19FA61BE22F70B6D7D9C462 /* Pods_University_ParkingTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7450F7F8862BB3C9E61A9DC0 /* Pods_University_ParkingTests.framework */; };
+		BF703B529049D25790CB888D /* Pods_University_Parking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2ACB732806EBFDB52B8C02E /* Pods_University_Parking.framework */; };
+		E269288D1FD6E3280061E41F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E269288C1FD6E3280061E41F /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,6 +43,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1374ABD144EB6D586009E174 /* Pods-University Parking.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-University Parking.debug.xcconfig"; path = "Pods/Target Support Files/Pods-University Parking/Pods-University Parking.debug.xcconfig"; sourceTree = "<group>"; };
+		14D56B472D3F663BFE049E0A /* Pods-University Parking.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-University Parking.release.xcconfig"; path = "Pods/Target Support Files/Pods-University Parking/Pods-University Parking.release.xcconfig"; sourceTree = "<group>"; };
 		52398C091FD079ED008E2EF3 /* Space.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Space.swift; sourceTree = "<group>"; };
 		52B2BCEA1FD4E6940026DE05 /* VUpark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VUpark.png; sourceTree = "<group>"; };
 		52B2BCEC1FD4FDE20026DE05 /* JSONSample.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = JSONSample.json; sourceTree = "<group>"; };
@@ -57,6 +63,14 @@
 		52BD6AF21FBD20DF0086B628 /* University_ParkingUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = University_ParkingUITests.swift; sourceTree = "<group>"; };
 		52BD6AF41FBD20DF0086B628 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		52BD6B021FBD241C0086B628 /* ParkControllerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParkControllerViewController.swift; sourceTree = "<group>"; };
+		645F27757CCFFD60D5D08F5E /* Pods-University ParkingTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-University ParkingTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-University ParkingTests/Pods-University ParkingTests.release.xcconfig"; sourceTree = "<group>"; };
+		7450F7F8862BB3C9E61A9DC0 /* Pods_University_ParkingTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_University_ParkingTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		88F6324AA13115A177946C95 /* Pods_University_ParkingUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_University_ParkingUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9480E01E160A50A141E1E32B /* Pods-University ParkingUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-University ParkingUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-University ParkingUITests/Pods-University ParkingUITests.release.xcconfig"; sourceTree = "<group>"; };
+		BC9FAA8A985E6031ACB7E216 /* Pods-University ParkingTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-University ParkingTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-University ParkingTests/Pods-University ParkingTests.debug.xcconfig"; sourceTree = "<group>"; };
+		C2ACB732806EBFDB52B8C02E /* Pods_University_Parking.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_University_Parking.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E269288C1FD6E3280061E41F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		F16496A2CD4FB38DFE8D8534 /* Pods-University ParkingUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-University ParkingUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-University ParkingUITests/Pods-University ParkingUITests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +78,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF703B529049D25790CB888D /* Pods_University_Parking.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +86,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A19FA61BE22F70B6D7D9C462 /* Pods_University_ParkingTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,12 +94,23 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6755889B776DCAB582FA39CF /* Pods_University_ParkingUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0281EE816FD371B78303B789 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C2ACB732806EBFDB52B8C02E /* Pods_University_Parking.framework */,
+				7450F7F8862BB3C9E61A9DC0 /* Pods_University_ParkingTests.framework */,
+				88F6324AA13115A177946C95 /* Pods_University_ParkingUITests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		52BD6AC61FBD20DE0086B628 = {
 			isa = PBXGroup;
 			children = (
@@ -91,6 +118,8 @@
 				52BD6AE61FBD20DF0086B628 /* University ParkingTests */,
 				52BD6AF11FBD20DF0086B628 /* University ParkingUITests */,
 				52BD6AD01FBD20DF0086B628 /* Products */,
+				E294017E217D7F0BB2B03062 /* Pods */,
+				0281EE816FD371B78303B789 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -118,6 +147,7 @@
 				52BD6B021FBD241C0086B628 /* ParkControllerViewController.swift */,
 				52B58F261FCFAC1D00F4555B /* Lot.swift */,
 				52398C091FD079ED008E2EF3 /* Space.swift */,
+				E269288C1FD6E3280061E41F /* GoogleService-Info.plist */,
 			);
 			path = "University Parking";
 			sourceTree = "<group>";
@@ -140,6 +170,19 @@
 			path = "University ParkingUITests";
 			sourceTree = "<group>";
 		};
+		E294017E217D7F0BB2B03062 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				1374ABD144EB6D586009E174 /* Pods-University Parking.debug.xcconfig */,
+				14D56B472D3F663BFE049E0A /* Pods-University Parking.release.xcconfig */,
+				BC9FAA8A985E6031ACB7E216 /* Pods-University ParkingTests.debug.xcconfig */,
+				645F27757CCFFD60D5D08F5E /* Pods-University ParkingTests.release.xcconfig */,
+				F16496A2CD4FB38DFE8D8534 /* Pods-University ParkingUITests.debug.xcconfig */,
+				9480E01E160A50A141E1E32B /* Pods-University ParkingUITests.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -147,9 +190,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 52BD6AF71FBD20DF0086B628 /* Build configuration list for PBXNativeTarget "University Parking" */;
 			buildPhases = (
+				BBD1E21202B0126CF0184DF6 /* [CP] Check Pods Manifest.lock */,
 				52BD6ACB1FBD20DE0086B628 /* Sources */,
 				52BD6ACC1FBD20DE0086B628 /* Frameworks */,
 				52BD6ACD1FBD20DE0086B628 /* Resources */,
+				E8FCA6BCD84909F1E69C7733 /* [CP] Embed Pods Frameworks */,
+				DD2EB789455C8865759C46BB /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -164,9 +210,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 52BD6AFA1FBD20DF0086B628 /* Build configuration list for PBXNativeTarget "University ParkingTests" */;
 			buildPhases = (
+				657E9B43CB0B3510464D99B5 /* [CP] Check Pods Manifest.lock */,
 				52BD6ADF1FBD20DF0086B628 /* Sources */,
 				52BD6AE01FBD20DF0086B628 /* Frameworks */,
 				52BD6AE11FBD20DF0086B628 /* Resources */,
+				4DDA910D00F533A7EC62B776 /* [CP] Embed Pods Frameworks */,
+				36697A7528688FE481A217A5 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -182,9 +231,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 52BD6AFD1FBD20DF0086B628 /* Build configuration list for PBXNativeTarget "University ParkingUITests" */;
 			buildPhases = (
+				FFA7A232482A0A47327FEB73 /* [CP] Check Pods Manifest.lock */,
 				52BD6AEA1FBD20DF0086B628 /* Sources */,
 				52BD6AEB1FBD20DF0086B628 /* Frameworks */,
 				52BD6AEC1FBD20DF0086B628 /* Resources */,
+				AEB8ACDDFAFD75ECEA56C201 /* [CP] Embed Pods Frameworks */,
+				BE96A302128E26C76B91B4ED /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -208,9 +260,8 @@
 				TargetAttributes = {
 					52BD6ACE1FBD20DE0086B628 = {
 						CreatedOnToolsVersion = 8.3.3;
-						DevelopmentTeam = 2BWL48RC3J;
 						LastSwiftMigration = 0910;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 					52BD6AE21FBD20DF0086B628 = {
 						CreatedOnToolsVersion = 8.3.3;
@@ -251,6 +302,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E269288D1FD6E3280061E41F /* GoogleService-Info.plist in Resources */,
 				52BD6ADD1FBD20DF0086B628 /* LaunchScreen.storyboard in Resources */,
 				52BD6ADA1FBD20DF0086B628 /* Assets.xcassets in Resources */,
 				52B2BCEB1FD4E6940026DE05 /* VUpark.png in Resources */,
@@ -274,6 +326,160 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		36697A7528688FE481A217A5 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-University ParkingTests/Pods-University ParkingTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		4DDA910D00F533A7EC62B776 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-University ParkingTests/Pods-University ParkingTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		657E9B43CB0B3510464D99B5 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-University ParkingTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		AEB8ACDDFAFD75ECEA56C201 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-University ParkingUITests/Pods-University ParkingUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		BBD1E21202B0126CF0184DF6 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-University Parking-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		BE96A302128E26C76B91B4ED /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-University ParkingUITests/Pods-University ParkingUITests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DD2EB789455C8865759C46BB /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-University Parking/Pods-University Parking-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E8FCA6BCD84909F1E69C7733 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-University Parking/Pods-University Parking-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
+				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-University Parking/Pods-University Parking-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		FFA7A232482A0A47327FEB73 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-University ParkingUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		52BD6ACB1FBD20DE0086B628 /* Sources */ = {
@@ -448,14 +654,17 @@
 		};
 		52BD6AF81FBD20DF0086B628 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1374ABD144EB6D586009E174 /* Pods-University Parking.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 2BWL48RC3J;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "University Parking/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "CS4278.University-Parking";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 4.0;
 			};
@@ -463,14 +672,17 @@
 		};
 		52BD6AF91FBD20DF0086B628 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 14D56B472D3F663BFE049E0A /* Pods-University Parking.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 2BWL48RC3J;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "University Parking/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "CS4278.University-Parking";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 4.0;
 			};
@@ -478,6 +690,7 @@
 		};
 		52BD6AFB1FBD20DF0086B628 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = BC9FAA8A985E6031ACB7E216 /* Pods-University ParkingTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -493,6 +706,7 @@
 		};
 		52BD6AFC1FBD20DF0086B628 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 645F27757CCFFD60D5D08F5E /* Pods-University ParkingTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -508,6 +722,7 @@
 		};
 		52BD6AFE1FBD20DF0086B628 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F16496A2CD4FB38DFE8D8534 /* Pods-University ParkingUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				INFOPLIST_FILE = "University ParkingUITests/Info.plist";
@@ -522,6 +737,7 @@
 		};
 		52BD6AFF1FBD20DF0086B628 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9480E01E160A50A141E1E32B /* Pods-University ParkingUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				INFOPLIST_FILE = "University ParkingUITests/Info.plist";
