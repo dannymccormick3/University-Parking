@@ -166,48 +166,131 @@ app.get('/getAvailableSpots', (req, res) => {
 });
 
 app.get('/checkIn', (req, res) => {
-	let startquery = "SELECT * "
-		+ "FROM Reservations "
-		+ "WHERE UserID = " + req.query.UserID +
-		" AND Lot = " + req.query.Lot + 
-		" AND Space = " + req.query.Space;
-	console.log(startquery);
-	connection.query(startquery, (err, rows) => {
-	if(err) {
-		let resObj = {"Failure": "True"};
-		res.send(JSON.stringify(resObj));
-		console.log(err);
-	}
-	let obj = {};
-	let count = 0;
-	rows.forEach( (row) => {
-		count++;
-	});
-	if(count ==0) {
-		let toIns = {}
-		toIns["UserID"] = req.query.UserID;
-		toIns["Lot"] = req.query.Lot;
-		toIns["Space"] = req.query.Space;
-		toIns["TimeIn"] = moment().format('YYYY-MM-DD HH:MM:SS');
-		let curquery = "INSERT INTO Logs SET ?";
-		connection.query(curquery, toIns, (err, sqlres)=> {
-			if(err){ 
-				let resObj = {"Failure": "True"};
-				res.send(JSON.stringify(resObj));
-				console.log(err);
-			} else {
-				//#TODO update occupied in logs, maybe have that be before the reservation check to make it more easily undoable
-				let resObj = {"Success":"Parked in available spot"};
-				res.send(JSON.stringify(resObj));
-			}
-		})	
-	} else if (count ==1) {
+	let checkOpen = "Select * "+
+					"FROM Spaces " +
+					"WHERE Lot = " + req.query.Lot +
+					" AND Space = " + req.query.Space +
+					" AND (Occupied = 0 OR Occupied = NULL)";
+	connection.query(checkOpen, (err, checkResp) => {
+		if(err) {
+			let resObj = {"Failure": "True"};
+			res.send(JSON.stringify(resObj));
+			console.log(err);
+		}
+		let checkCounter = 0;
+		checkResp.forEach( (check) => {
+			checkCounter ++;
+		})
+		if(checkCounter == 1) {
+			let setOccupied = "UPDATE Spaces " +
+							  "SET Occupied = 1 " +
+							  "WHERE Lot = " + req.query.Lot +
+							  " AND Space = " + req.query.Space;
+			connection.query(setOccupied, (err, occupiedSuccess) => {
+				if(err) {
+					let resObj = {"Failure": "True"};
+					res.send(JSON.stringify(resObj));
+					console.log(err);
+				}else {				
+					let startquery = "SELECT * "
+						+ "FROM Reservations "
+						+ "WHERE UserID = " + req.query.UserID +
+						" AND Lot = " + req.query.Lot + 
+						" AND Space = " + req.query.Space + 
+						" AND Completion = NULL ";
+					console.log(startquery);
+					connection.query(startquery, (err, rows) => {
+					if(err) {
+						let resObj = {"Failure": "True"};
+						res.send(JSON.stringify(resObj));
+						console.log(err);
+					}
+					let obj = {};
+					let count = 0;
+					rows.forEach( (row) => {
+						count++;
+					});
+					if(count ==0) {
+						let toIns = {}
+						toIns["UserID"] = req.query.UserID;
+						toIns["Lot"] = req.query.Lot;
+						toIns["Space"] = req.query.Space;
+						toIns["TimeIn"] = moment().format('YYYY-MM-DD HH:MM:SS');
+						let curquery = "INSERT INTO Logs SET ?";
+						connection.query(curquery, toIns, (err, sqlres)=> {
+							if(err){ 
+								let resObj = {"Failure": "True"};
+								res.send(JSON.stringify(resObj));
+								console.log(err);
+							} else {
+								//#TODO update occupied in logs, maybe have that be before the reservation check to make it more easily undoable
+								let resObj = {"Success":"Parked in available spot"};
+								res.send(JSON.stringify(resObj));
+							}
+						})	
+					} else if (count ==1) {
+						let toIns = {}
+						toIns["UserID"] = req.query.UserID;
+						toIns["Lot"] = req.query.Lot;
+						toIns["Space"] = req.query.Space;
+						toIns["TimeIn"] = moment().format('YYYY-MM-DD HH:MM:SS');
+						let curquery = "INSERT INTO Logs SET ?";
+						connection.query(curquery, toIns, (err, sqlres)=> {
+							if(err){ 
+								let resObj = {"Failure": "True"};
+								res.send(JSON.stringify(resObj));
+								console.log(err);
+							} else {
+								//#TODO update occupied in logs, maybe have that be before the reservation check to make it more easily undoable
+								let updateResvQuery = "UPDATE Reservations SET COMPLETION = " + moment().format('YYYY-MM-DD HH:MM:SS') + 
+													" + WHERE WHERE UserID = " + req.query.UserID +
+													" AND Lot = " + req.query.Lot + 
+													" AND Space = " + req.query.Space +
+													" AND Completion = NULL";
+								connection.query(updateResvQuery, (err,resvresp) => {
+									if(err){ 
+										let resObj = {"Failure": "True"};
+										res.send(JSON.stringify(resObj));
+										console.log(err);
+									}
+									let resObj = {"Success":"Reservation completed"}
+									res.send(JSON.stringify(resObj));
+								})
+							}
 
-	}
-	res.send(JSON.stringify(obj));
+						})	 
+					}
+					})
+				}
+			})
+		} else {
+			let resObj = {"Failure": "Spot is occupied"};
+			res.send(JSON.stringify(resObj));
+		}
 	})
-	
 });
 
+app.get('/checkIn', (req, res) => {
+	let checkParked = "UPDATE Spaces " +
+					"SET Occupied = 0" +
+					"WHERE Lot = " + req.query.Lot +
+					" AND Space = " + req.query.Space +
+					" AND (Occupied = 1";
+	connection.query(checkOpen, (err, checkResp) => {
+		if(err){ 
+			let resObj = {"Failure": "True"};
+			res.send(JSON.stringify(resObj));
+			console.log(err);
+		}  else {
+			if( checkResp.changedRows ==1) {
+				let resObj = {"Success":"Unparked successfully"};
+				res.send(JSON.stringify(resObj));
+			} else {
+				let resObj = {"Failure":"Was not parked beforehand"};
+				res.send(JSON.stringify(resObj));
+			}
+		}
+	})
+});
 
 app.listen(3000);
