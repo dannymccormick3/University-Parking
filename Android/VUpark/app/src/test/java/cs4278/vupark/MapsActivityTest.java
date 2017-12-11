@@ -35,4 +35,17 @@ public class MapsActivityTest {
         }
     }
 
+    @Test
+    public void testPolygonClick() throws Exception {
+        MapsActivity mapsActivity = new MapsActivity();
+        Thread.sleep(2000);
+        ArrayList<ParkingLot> mParkingLots = mapsActivity.getmParkingLots();
+        if(mParkingLots.size() != 0) {
+            // mock clicking on a parking lot
+            mapsActivity.onPolygonClicked(mParkingLots.get(0).getPolygon());
+            assert(mapsActivity.getCurSpot() == -1);
+            assert(mapsActivity.getLotName().getText() == "Highland");
+            assert(mapsActivity.getAnimator().getDisplayedChild() == 1);
+        }
+    }
 }

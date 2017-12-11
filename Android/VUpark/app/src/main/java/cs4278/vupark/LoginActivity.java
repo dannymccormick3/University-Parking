@@ -34,9 +34,11 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        // obtain references to the EditTexts to input username and password
         mVUnetid = findViewById(R.id.vunetid_text);
         mPassword = findViewById(R.id.password_text);
 
+        // obtain references to the login button
         mLoginButton = findViewById(R.id.login_button);
         final Intent intent = new Intent(this, MapsActivity.class);
 

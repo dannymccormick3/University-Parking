@@ -10,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -286,6 +287,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        // enable location marker if allowed, otherwise request permission
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
@@ -295,6 +297,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     MY_PERMISSIONS_REQUEST_FINE_LOCATION);
         }
 
+        // place the lots (polygons) onto the map
         mapReadyToBePainted = true;
         if (mParkingLots.size() > 0){
             paintLots();
@@ -307,22 +310,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_FINE_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
+                // if permission for fine location was granted
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
                     try {
+                        // set location marker on map
                         mMap.setMyLocationEnabled(true);
                     } catch(SecurityException e) {
-                        //
+                        Log.println(Log.DEBUG, "MapsActivity", "Permissions failure.");
                     }
                 }
+                // otherwise, don't enable the marker -- not necessary for MVP
             }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
         }
     }
 
@@ -358,14 +357,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(terracePlaceGarage, 15.0f));
     }
 
-    private void onPolygonClicked(Polygon polygon){
+    // public for testing purposes
+    public void onPolygonClicked(Polygon polygon){
+        // Update the current lot and lot name
         curLot = (ParkingLot)polygon.getTag();
         String curLotName = curLot.getName();
         lot_name.setText(curLotName);
         animator.setDisplayedChild(1);
         listViewAdapter.clear();
 
+        // reset the current spot to unchosen (-1)
         curSpot = -1;
+
+        // Fill in the list with the spots in the lot from the database
         for(String lotKey: lotMap.keySet()){
             HashMap<String, Object> lot = (HashMap)lotMap.get(lotKey);
             String lotName = lot.get("title").toString();
@@ -405,9 +409,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        // clear any reservation before being destroyed
         setSpotOccupancy(curSpotNumber, false);
+        super.onDestroy();
     }
 
     public HashMap<String, Object> getLotMap(){
@@ -418,5 +423,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public ArrayList<ParkingLot> getmParkingLots(){
         //Exists for testing purposes
         return mParkingLots;
+    }
+
+    public int getCurSpot() {
+        // Exists for testing purposes
+        return curSpot;
+    }
+
+    public TextView getLotName() {
+        // Exists for testing purposes
+        return lot_name;
+    }
+
+    public ViewAnimator getAnimator() {
+        // Exists for testing purposes
+        return animator;
     }
 }
