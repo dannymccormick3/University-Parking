@@ -409,4 +409,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onStop();
         setSpotOccupancy(curSpotNumber, false);
     }
+
+    public HashMap<String, Object> getLotMap(){
+        //Exists for testing purposes
+        return lotMap;
+    }
+
+    public ArrayList<ParkingLot> getmParkingLots(){
+        //Exists for testing purposes
+        return mParkingLots;
+    }
 }

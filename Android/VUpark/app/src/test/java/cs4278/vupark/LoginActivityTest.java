@@ -4,6 +4,7 @@ import android.content.Intent;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static org.junit.Assert.*;
