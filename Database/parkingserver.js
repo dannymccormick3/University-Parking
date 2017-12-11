@@ -2,6 +2,12 @@ const express = require('express');
 const app = express();
 const mysql = require('mysql');
 const moment = require('moment');
+const bodyParser = require('body-parser');
+const randomstring = require('randomstring');
+const crypto = require('crypto-js/sha256');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+
 const connection = mysql.createConnection({
 	host:'parkingdatabase.c9dcrnrodp1p.us-east-2.rds.amazonaws.com',
  	user: 'ParkTeam',
@@ -10,6 +16,50 @@ const connection = mysql.createConnection({
 });
 const LIMIT = 100;
 connection.connect((err)=> {
+})
+
+app.post('/createAccount', (req, res) => {
+	let uname = req.body.UserID;
+	let pass = req.body.Password;
+	let salt = randomstring.generate();
+	let hash = crypto(pass+salt);
+	let createUserQuery = "INSERT INTO Accounts SET ? ";
+	connection.query(createUserQuery, {UserID: uname, "Salt": salt, "Hash": hash}, (err, createres) => {
+		if(err){ 
+			let resObj = {"Failure": "True"};
+			res.send(JSON.stringify(resObj));
+			console.log(err);}
+		else{
+			res.send(JSON.stringify({"Success" : createres.UserID}));
+		}
+	});
+});
+app.post('/validateCredentials', (req, res)=> {
+	let uname = req.body.UserID;
+	let pass = req.body.Password;
+	let checkUserQuery = "SELECT * " +
+						 "FROM Accounts " +
+						 "WHERE UserID = " + uname;
+	connection.query(checkUserQuery, (err, validres)=> {
+		if(err){ 
+			let resObj = {"Failure": "True"};
+			res.send(JSON.stringify(resObj));
+			console.log(err);}
+		else{
+			if(validres) {
+				let salt = validres.Salt;
+				if(validres.Hash==(crypto(salt + pass))) {
+					res.send(JSON.stringify({"Success" : {"UserID": validres.UserID, "Permit": validres.Permit}}));	
+				} else {
+					let resObj = {"Failure": "Incorrect Password"};
+					res.send(JSON.stringify(resObj));
+				}
+			} else {
+				let resObj = {"Failure": "UserID not found"};
+				res.send(JSON.stringify(resObj));
+			}
+		}
+	})
 })
 app.get('/makeReservation', (req, res) => {
 	let toIns = {}
