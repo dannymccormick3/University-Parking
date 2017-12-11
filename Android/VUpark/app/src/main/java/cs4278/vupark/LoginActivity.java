@@ -26,7 +26,6 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mPassword;
     private Button mLoginButton;
     private HashMap<String, Object> userMap = new HashMap<>();
-    private HashMap<String, Object> lotMap = new HashMap<>();
     private FirebaseDatabase database;
 
 
@@ -35,19 +34,35 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        // obtain references to the EditTexts to input username and password
         mVUnetid = findViewById(R.id.vunetid_text);
         mPassword = findViewById(R.id.password_text);
 
+        // obtain references to the login button
         mLoginButton = findViewById(R.id.login_button);
+        final Intent intent = new Intent(this, MapsActivity.class);
+
+        //Click listener for login button. Checks if valid username/password, if not displays
+        //error message.
         mLoginButton.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
                         String username = mVUnetid.getText().toString();
                         String password = mPassword.getText().toString();
-                        tryLogin(username, password);
+                        int result = tryLogin(username, password, userMap, intent);
+                        if (result == -1){
+                            Toast.makeText(getApplicationContext(), "Invalid password",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                        else if(result == -2){
+                            Toast.makeText(getApplicationContext(), "Invalid username",
+                                    Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
         );
+
+        //Connects to Firebase database and automatically fills userMap with the data.
         database = FirebaseDatabase.getInstance();
         DatabaseReference userRef = database.getReference("users");
         userRef.addValueEventListener(new ValueEventListener() {
@@ -62,41 +77,25 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.LENGTH_LONG).show();
             }
         });
-        DatabaseReference lotRef = database.getReference("lots");
-        lotRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                lotMap = (HashMap)dataSnapshot.getValue();
-                Log.d("LOT TEST", lotMap.get("lotid1").toString());
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(getApplicationContext(), "Failed to load lot info from database",
-                        Toast.LENGTH_LONG).show();
-            }
-        });
     }
 
-    private void tryLogin(String username, String password) {
-        final Intent intent = new Intent(this, MapsActivity.class);
-        if (userMap.containsKey(username)) {
-            HashMap<String, String> user_info = (HashMap)userMap.get(username);
-            if(user_info.get("password").equals(password)) {
-                intent.putExtra("username", username);
-                intent.putExtra("permit", user_info.get("permit"));
-                startActivity(intent);
+    public int tryLogin(String username, String password, HashMap<String, Object> mUserMap, Intent intent) {
+        //Function to try to login user. If successful, starts new activity, if not returns error
+        //code (-2 if user doesn't exist, -1 if password is wrong).
+        if (mUserMap.containsKey(username)) {
+            HashMap<String, String> user_info = (HashMap) mUserMap.get(username);
+            if (user_info.get("password").equals(password)) {
+                if (intent != null) {
+                    intent.putExtra("username", username);
+                    intent.putExtra("permit", user_info.get("permit"));
+                    startActivity(intent);
+                }
+                return 0;
+            } else {
+                return -1;
             }
-            else {
-                Toast.makeText(getApplicationContext(), "Invalid password",
-                        Toast.LENGTH_LONG).show();
-            }
+        } else {
+            return -2;
         }
-        else {
-            Toast.makeText(getApplicationContext(), "Invalid username",
-                    Toast.LENGTH_LONG).show();
-        }
-
-
     }
 }

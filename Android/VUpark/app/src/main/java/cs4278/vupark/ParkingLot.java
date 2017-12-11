@@ -17,8 +17,11 @@ import java.util.Map;
 
 public class ParkingLot {
     private String name;
+
+    // Google Maps drawn polygon + options (characteristics)
     private PolygonOptions polyOptions;
     private Polygon lot;
+
     private String permits;
     private List<Integer> availableSpots;
 
@@ -41,5 +44,9 @@ public class ParkingLot {
 
     public void setPolygon(Polygon poly){
         lot = poly;
+    }
+
+    public Polygon getPolygon() {
+        return lot;
     }
 }
