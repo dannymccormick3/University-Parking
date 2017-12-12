@@ -7,12 +7,15 @@
 //
 
 import UIKit
+import Firebase
+import FirebaseAuth
 
 class LoginController: UIViewController {
 
     @IBOutlet weak var UsernameTextField: UITextField!
     @IBOutlet weak var PasswordTextField: UITextField!
     @IBOutlet weak var LoginButton: UIButton!
+    
     
     // TODO - authentication
     var loginSuccess = true
@@ -28,7 +31,27 @@ class LoginController: UIViewController {
     }
 
     @IBAction func attemptLogin(_ sender: Any) {
-        self.performSegue(withIdentifier: "loginSuccessful", sender: self)
+        let email = self.UsernameTextField.text!
+        let password = self.PasswordTextField.text!
+        
+        if email != "" && password != "" {
+            Auth.auth().signIn(withEmail: email, password: password, completion: { (user, error) in
+                if error == nil {
+                    self.performSegue(withIdentifier: "loginSuccessful", sender: self)
+                }
+                else {
+                    print("error")
+                }
+            })
+        }
+        else {
+            let alert = UIAlertController(title: "Error", message: "Enter Correct Email/Password", preferredStyle: .alert)
+            
+            let action = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alert.addAction(action)
+            self.present(alert, animated: true, completion: nil)
+        }
+        
     }
 
 }

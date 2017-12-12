@@ -6,6 +6,7 @@ target 'University Parking' do
 
 pod 'Firebase/Core'
 pod 'Firebase/Database'
+pod 'Firebase/Auth'
   # Pods for University Parking
 
   target 'University ParkingTests' do
